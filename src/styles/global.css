@@ -1,0 +1,331 @@
+@import "tailwindcss";
+
+/* Тёмная тема — по системной настройке или data-theme на <html> */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ===== Токены сайта =====
+   Примитивы → семантика. Компоненты используют только семантику.
+   Тема меняет только семантический слой (тот же принцип, что в Noboring DS). */
+:root {
+  /* примитивы */
+  --ink-0: #ffffff;
+  --ink-50: #f6f6f4;
+  --ink-100: #ececea;
+  --ink-200: #dcdcd8;
+  --ink-400: #9a9a94;
+  --ink-500: #73736d;
+  --ink-700: #3a3a36;
+  --ink-800: #232320;
+  --ink-900: #161614;
+  --ink-950: #0e0e0d;
+  --indigo-400: #6b70e6;
+  --indigo-500: #1d23cd;
+  --indigo-50: #ecedfb;
+  --green-600: #1f7a4a;
+  --green-50: #e7f5ec;
+  --blue-600: #1f5fbf;
+  --blue-50: #e8f0fb;
+  --purple-600: #6a3fc0;
+  --purple-50: #f1ecfb;
+  --gray-600: #5c5c57;
+  --gray-50: #f0f0ee;
+
+  /* семантика — светлая тема */
+  --c-bg: var(--ink-50);
+  --c-surface: var(--ink-0);
+  --c-surface-2: var(--ink-100);
+  --c-text: var(--ink-900);
+  --c-muted: var(--ink-500);
+  --c-line: var(--ink-200);
+  --c-accent: var(--indigo-500);
+  --c-accent-soft: var(--indigo-50);
+  --c-on-accent: var(--ink-0);
+  --c-overlay: rgb(14 14 13 / 0.32);
+  --c-green: var(--green-600);
+  --c-green-soft: var(--green-50);
+  --c-blue: var(--blue-600);
+  --c-blue-soft: var(--blue-50);
+  --c-purple: var(--purple-600);
+  --c-purple-soft: var(--purple-50);
+  --c-gray: var(--gray-600);
+  --c-gray-soft: var(--gray-50);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --c-bg: var(--ink-950);
+    --c-surface: var(--ink-900);
+    --c-surface-2: var(--ink-800);
+    --c-text: #f2f2ef;
+    --c-muted: var(--ink-400);
+    --c-line: #2c2c29;
+    --c-accent: var(--indigo-400);
+    --c-accent-soft: #1e1f3d;
+    --c-on-accent: var(--ink-0);
+    --c-overlay: rgb(0 0 0 / 0.55);
+    --c-green: #6fd39b;
+    --c-green-soft: #12291c;
+    --c-blue: #8db6f2;
+    --c-blue-soft: #132238;
+    --c-purple: #b99bf0;
+    --c-purple-soft: #231a36;
+    --c-gray: #b4b4ae;
+    --c-gray-soft: #232320;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --c-bg: var(--ink-950);
+  --c-surface: var(--ink-900);
+  --c-surface-2: var(--ink-800);
+  --c-text: #f2f2ef;
+  --c-muted: var(--ink-400);
+  --c-line: #2c2c29;
+  --c-accent: var(--indigo-400);
+  --c-accent-soft: #1e1f3d;
+  --c-on-accent: var(--ink-0);
+  --c-overlay: rgb(0 0 0 / 0.55);
+  --c-green: #6fd39b;
+  --c-green-soft: #12291c;
+  --c-blue: #8db6f2;
+  --c-blue-soft: #132238;
+  --c-purple: #b99bf0;
+  --c-purple-soft: #231a36;
+  --c-gray: #b4b4ae;
+  --c-gray-soft: #232320;
+  color-scheme: dark;
+}
+
+/* Tailwind-утилиты поверх семантики: bg-surface, text-muted, border-line … */
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-text: var(--c-text);
+  --color-muted: var(--c-muted);
+  --color-line: var(--c-line);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-on-accent: var(--c-on-accent);
+  --color-overlay: var(--c-overlay);
+  --color-st-green: var(--c-green);
+  --color-st-green-soft: var(--c-green-soft);
+  --color-st-blue: var(--c-blue);
+  --color-st-blue-soft: var(--c-blue-soft);
+  --color-st-purple: var(--c-purple);
+  --color-st-purple-soft: var(--c-purple-soft);
+  --color-st-gray: var(--c-gray);
+  --color-st-gray-soft: var(--c-gray-soft);
+
+  --font-sans: "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-card: 20px;
+  --radius-chip: 999px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* ===== База ===== */
+html {
+  background: var(--c-bg);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  background: var(--c-bg);
+}
+
+::selection {
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+a {
+  color: inherit;
+}
+
+.link {
+  color: var(--c-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.link:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Скролл-лок под открытой панелью */
+html.panel-open {
+  overflow: hidden;
+}
+
+/* ===== Текст кейса (MDX) ===== */
+.prose-case {
+  font-size: 17px;
+  line-height: 1.65;
+}
+.prose-case > * + * {
+  margin-top: 1rem;
+}
+.prose-case h2 {
+  margin-top: 3rem;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.prose-case h3 {
+  margin-top: 2rem;
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+.prose-case h2 + *,
+.prose-case h3 + * {
+  margin-top: 0.75rem;
+}
+.prose-case p {
+  text-wrap: pretty;
+}
+.prose-case strong {
+  font-weight: 650;
+}
+.prose-case ul,
+.prose-case ol {
+  padding-left: 1.25rem;
+}
+.prose-case ul {
+  list-style: disc;
+}
+.prose-case ol {
+  list-style: decimal;
+}
+.prose-case li + li {
+  margin-top: 0.35rem;
+}
+.prose-case li::marker {
+  color: var(--c-muted);
+}
+.prose-case code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--c-surface-2);
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+}
+.prose-case table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.prose-case .table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--c-line);
+  border-radius: 14px;
+}
+.prose-case th,
+.prose-case td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--c-line);
+}
+.prose-case th {
+  font-weight: 600;
+  color: var(--c-muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--c-surface-2);
+}
+.prose-case tr:last-child td {
+  border-bottom: 0;
+}
+.prose-case hr {
+  border: 0;
+  border-top: 1px solid var(--c-line);
+  margin: 2.5rem 0;
+}
+.prose-case details {
+  border: 1px solid var(--c-line);
+  border-radius: 14px;
+  padding: 0.9rem 1.1rem;
+}
+.prose-case summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.prose-case details[open] summary {
+  margin-bottom: 1rem;
+}
+
+/* ===== Появление при скролле (без JS-библиотек) ===== */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== Печать / PDF ===== */
+@media print {
+  html.panel-open {
+    overflow: visible;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .case-panel {
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  .case-panel-scroll {
+    overflow: visible !important;
+    height: auto !important;
+  }
+}

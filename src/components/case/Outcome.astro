@@ -1,0 +1,31 @@
+---
+type Status = 'done' | 'progress' | 'backlog' | 'focus';
+interface Props {
+  title?: string;
+  items: { text: string; status: Status; label?: string }[];
+}
+const { title = 'Итог', items } = Astro.props;
+
+const meta: Record<Status, { label: string; cls: string }> = {
+  done: { label: 'в продукте', cls: 'bg-st-green-soft text-st-green' },
+  progress: { label: 'в работе', cls: 'bg-st-gray-soft text-st-gray' },
+  backlog: { label: 'в бэклоге', cls: 'bg-st-gray-soft text-st-gray' },
+  focus: { label: 'текущий фокус', cls: 'bg-st-blue-soft text-st-blue' },
+};
+---
+
+<section class="not-prose" aria-label={title}>
+  <p class="text-[13px] font-semibold tracking-wide text-muted uppercase">{title}</p>
+  <ul class="mt-3 divide-y divide-line rounded-2xl border border-line bg-surface">
+    {
+      items.map((item) => (
+        <li class="flex flex-col gap-2 px-5 py-3.5 text-[15px] leading-snug sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <span>{item.text}</span>
+          <span class={`shrink-0 self-start rounded-full px-2.5 py-0.5 text-[13px] font-medium sm:self-auto ${meta[item.status].cls}`}>
+            {item.label ?? meta[item.status].label}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</section>

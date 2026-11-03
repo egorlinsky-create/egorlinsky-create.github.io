@@ -1,0 +1,26 @@
+{
+  "$comment": "Внешние навыки ставятся командой npm run skills:install. Свои навыки проекта лежат в .agents/skills.",
+  "agents": ["claude-code", "codex"],
+  "external": [
+    {
+      "name": "shadcn",
+      "source": "shadcn/ui",
+      "why": "Компоненты shadcn/ui, CLI, реестры (@magicui, @aceternity, 21st.dev, affectUI) и MCP"
+    },
+    {
+      "name": "magic-ui",
+      "source": "magicuidesign/magicui",
+      "why": "Анимированные блоки Magic UI"
+    },
+    {
+      "name": "emil-design-eng",
+      "source": "emilkowalski/skill",
+      "why": "Принципы UI-моушена: создание, ревью и аудит анимаций"
+    },
+    {
+      "name": "gsap",
+      "source": "https://github.com/greensock/gsap-skills",
+      "why": "GSAP: ScrollTrigger, timeline, useGSAP — scroll-сторителлинг в кейсах"
+    }
+  ]
+}

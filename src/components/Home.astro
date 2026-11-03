@@ -1,0 +1,176 @@
+---
+import { getCollection } from 'astro:content';
+import CaseCard from './CaseCard.astro';
+import Figure from './case/Figure.astro';
+import { site } from '@/site';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+
+const craft = [
+  { src: '/images/home/craft-1-mode.jpg', caption: '**Режим подборки виден всегда.** Баннер с названием и выходом, счётчик ФД, сохранённые фильтры' },
+  { src: '/images/home/craft-2-mileage.jpg', caption: '**Пробег при выезде на линию.** Понятная формулировка, прошлое показание, ввод по фото' },
+  { src: '/images/home/craft-3-field.jpg', caption: '**.Field: семь состояний.** Экспорт компонента из Noboring DS' },
+  { src: '/images/home/craft-4-next-action.jpg', caption: '**Следующее действие — на виду.** Чек-лист решения и «Взять в работу» в начале карточки обращения' },
+];
+---
+
+<div class="mx-auto w-full max-w-6xl px-4 sm:px-8" transition:animate="none">
+  <header class="no-print flex items-center justify-between py-6">
+    <a href={import.meta.env.BASE_URL} class="font-semibold tracking-tight">{site.name}</a>
+    <nav class="flex items-center gap-5 text-sm text-muted">
+      <a href="#cases" class="hover:text-text">Кейсы</a>
+      <a href="#process" class="hidden hover:text-text sm:inline">Как работаю</a>
+      <a href={site.telegram} class="rounded-full bg-text px-4 py-2 font-medium text-bg hover:opacity-90" target="_blank" rel="noopener">
+        Написать в Telegram
+      </a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Интро -->
+    <section class="pt-10 pb-16 sm:pt-20 sm:pb-24">
+      <p class="text-sm text-muted">{site.role} · {site.city}</p>
+      <h1 class="mt-4 max-w-4xl text-[clamp(2.1rem,5.2vw,4rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-balance">
+        Проектирую сложные B2B-системы — и собираю прототипы в AI-агентах
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg text-muted text-pretty">
+        Связываю исследования, интерфейсы и код: разбираюсь в рабочих процессах, проектирую продуктовые сценарии и строю дизайн-системы,
+        которые помогают команде доводить решения до реализации.
+      </p>
+      <p class="mt-4 max-w-2xl text-lg text-muted text-pretty">
+        В «Нескучных финансах» развиваю ERP и <strong class="font-semibold text-text">Noboring Design System</strong>. В Базе Такси проектирую
+        приложение водителя и админку таксопарка.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3 text-sm">
+        <a href="#cases" class="rounded-full bg-accent px-5 py-2.5 font-medium text-on-accent hover:opacity-90">Смотреть кейсы</a>
+        <a href={site.telegram} target="_blank" rel="noopener" class="rounded-full border border-line px-5 py-2.5 font-medium hover:bg-surface"
+          >Telegram {site.telegramHandle}</a
+        >
+        <a href={site.linkedin} target="_blank" rel="noopener" class="rounded-full border border-line px-5 py-2.5 font-medium hover:bg-surface"
+          >LinkedIn</a
+        >
+      </div>
+
+      <div class="mt-12 max-w-3xl rounded-[var(--radius-card)] border border-line bg-accent-soft p-5 sm:p-6">
+        <p class="text-[15px] leading-relaxed">
+          <strong class="font-semibold">AI-native процесс.</strong> Прототипы собираю в агентах Claude и Codex на компонентах дизайн-системы. По уровню
+          они близки к проду: работает ввод данных, и нет сломанных связок, как в сложных Figma-прототипах. Первая итерация для обсуждения с командой —
+          за день вместо 1–2 недель.
+        </p>
+      </div>
+    </section>
+
+    <!-- Кейсы -->
+    <section id="cases" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h2 class="text-3xl font-semibold tracking-tight">Избранные проекты</h2>
+        <p class="max-w-md text-[15px] text-muted">
+          Фича с измеренным эффектом, процесс с исследованиями, сервис для двух ролей, системная платформа и исследование, которое поменяло задачу.
+        </p>
+      </div>
+      {
+        cases.length === 0 ? (
+          <p class="mt-10 rounded-[var(--radius-card)] border border-dashed border-line p-8 text-muted">
+            Кейсов пока нет. Добавь файл в src/content/cases — карточка появится здесь.
+          </p>
+        ) : (
+          <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:gap-6">
+            {cases.map((entry, index) => (
+              <CaseCard entry={entry} index={index} />
+            ))}
+          </div>
+        )
+      }
+    </section>
+
+    <!-- Интерфейс крупно -->
+    <section class="border-t border-line py-16 sm:py-20">
+      <h2 class="text-3xl font-semibold tracking-tight">Интерфейс крупно</h2>
+      <p class="mt-3 max-w-2xl text-[15px] text-muted">
+        Плотные B2B-экраны держатся на деталях: иерархия, состояния, подсказки в нужный момент. Фрагменты реальных макетов из кейсов, данные
+        демонстрационные.
+      </p>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+        {craft.map((item) => <Figure src={item.src} caption={item.caption} alt={item.caption.replace(/\*\*/g, '')} />)}
+      </div>
+      <div class="mt-6">
+        <Figure
+          src="/images/home/craft-5-multiselect.jpg"
+          caption="**Мультиселект в плотной таблице.** Выбранные значения схлопываются в счётчик и раскрываются до 3,5 строк"
+          alt="Мультиселект в плотной таблице: выбранные значения схлопываются в счётчик"
+        />
+      </div>
+    </section>
+
+    <!-- Как работаю -->
+    <section id="process" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
+      <h2 class="text-3xl font-semibold tracking-tight">Как я работаю: прототип уровня прода за день</h2>
+      <div class="mt-10 overflow-x-auto rounded-[var(--radius-card)] border border-line bg-surface">
+        <table class="w-full min-w-[640px] text-left text-[15px] leading-snug">
+          <thead class="bg-surface-2 text-[13px] tracking-wide text-muted uppercase">
+            <tr>
+              <th class="w-1/4 p-4 font-semibold"></th>
+              <th class="p-4 font-semibold">Раньше: прототип в Figma</th>
+              <th class="p-4 font-semibold text-accent">Сейчас: прототип в агенте</th>
+            </tr>
+          </thead>
+          <tbody class="[&_td]:border-t [&_td]:border-line [&_td]:p-4 [&_td]:align-top">
+            <tr><td class="font-medium">Срок до первого обсуждения</td><td class="text-muted">1–2 недели</td><td>Максимум 1 день</td></tr>
+            <tr>
+              <td class="font-medium">Ввод данных в тесте</td><td class="text-muted">Участник кликает по заготовленным переходам</td><td
+                >Участник вводит свои данные, поля и фильтры работают</td
+              >
+            </tr>
+            <tr>
+              <td class="font-medium">Качество наблюдений</td><td class="text-muted"
+                >В сложных прототипах ломались связки — часть затруднений создавал сам прототип</td
+              ><td>Затруднения про интерфейс, а не про сломанный переход</td>
+            </tr>
+            <tr>
+              <td class="font-medium">Основа</td><td class="text-muted">Компоненты и связи Figma</td><td
+                >Дизайн-система с контрактом Figma ↔ React и инструкциями для агента</td
+              >
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-6 max-w-3xl text-[15px] text-muted text-pretty">
+        Прототип в агенте — инструмент проверки и обсуждения: команда спорит о работающем интерфейсе, а не о картинках. <strong
+          class="font-semibold text-text">Так уже собраны:</strong
+        > в ERP — встречи и задачи, «Пульс бизнеса», дашборды и кабинет клиента; в Базе Такси — кабинет оператора и таксопарка.
+      </p>
+    </section>
+
+    <!-- Путь -->
+    <section class="border-t border-line py-16 sm:py-20">
+      <h2 class="text-3xl font-semibold tracking-tight">Мой путь</h2>
+      <ol class="mt-8 grid gap-6 sm:grid-cols-3">
+        <li class="rounded-[var(--radius-card)] border border-line bg-surface p-6">
+          <p class="text-sm text-muted">с 2019 · 4 года</p>
+          <p class="mt-2 font-semibold">DDoS-Guard</p>
+          <p class="mt-2 text-[15px] text-muted">Первая роль дизайнера.</p>
+        </li>
+        <li class="rounded-[var(--radius-card)] border border-line bg-surface p-6">
+          <p class="text-sm text-muted">с 2023</p>
+          <p class="mt-2 font-semibold">Нескучные финансы</p>
+          <p class="mt-2 text-[15px] text-muted">
+            Пришёл ведущим UI-дизайнером: токенная архитектура, интерактивные прототипы, затем — свои исследования и проектирование разделов.
+          </p>
+        </li>
+        <li class="rounded-[var(--radius-card)] border border-line bg-surface p-6">
+          <p class="text-sm text-muted">с 2025</p>
+          <p class="mt-2 font-semibold">База Такси</p>
+          <p class="mt-2 text-[15px] text-muted">Продуктовый дизайнер приложения водителя и админки таксопарка.</p>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="no-print flex flex-col gap-4 border-t border-line py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+    <p>Открыт к предложениям: продуктовый дизайн B2B и сложных систем.</p>
+    <div class="flex gap-5">
+      <a class="link" href={site.telegram} target="_blank" rel="noopener">Telegram {site.telegramHandle}</a>
+      <a class="link" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</div>

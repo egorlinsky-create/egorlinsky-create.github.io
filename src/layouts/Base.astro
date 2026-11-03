@@ -1,0 +1,130 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@/styles/global.css';
+import { site } from '@/site';
+import { withBase } from '@/lib/utils';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const { title = site.title, description = site.description, image } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefined;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e0e0d" media="(prefers-color-scheme: dark)" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <ClientRouter />
+  </head>
+  <body class="min-h-dvh">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2"
+      >К содержимому</a
+    >
+    <slot />
+
+    <script>
+      import { navigate } from 'astro:transitions/client';
+
+      const SCROLL_KEY = 'home-scroll';
+      const FROM_HOME_KEY = 'panel-from-home';
+      const LAST_CASE_KEY = 'last-case';
+      const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+      const homeHref = `${base}/`;
+
+      const isPanelPage = () => Boolean(document.querySelector('[data-case-panel]'));
+
+      // Перед уходом с главной запоминаем позицию — главная остаётся под панелью на том же месте
+      document.addEventListener('astro:before-preparation', (event) => {
+        const to = (event as unknown as { to: URL }).to;
+        const goingToCase = to.pathname.startsWith(`${base}/cases/`);
+        if (!isPanelPage() && goingToCase) {
+          sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+          sessionStorage.setItem(FROM_HOME_KEY, '1');
+        }
+        if (isPanelPage() && !goingToCase) {
+          sessionStorage.removeItem(FROM_HOME_KEY);
+        }
+      });
+
+      // Восстанавливаем, только если в главную/панель пришли переходом из этой пары
+      const restoreScroll = () => {
+        const saved = sessionStorage.getItem(SCROLL_KEY);
+        if (saved !== null) window.scrollTo({ top: Number(saved), behavior: 'instant' });
+      };
+      const finishRestore = () => {
+        if (!isPanelPage()) sessionStorage.removeItem(SCROLL_KEY);
+      };
+
+      function closePanel() {
+        const panel = document.querySelector<HTMLElement>('[data-case-panel]');
+        if (!panel || panel.dataset.closing) return;
+        panel.dataset.closing = 'true';
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.setTimeout(
+          () => {
+            if (sessionStorage.getItem(FROM_HOME_KEY) && history.length > 1) history.back();
+            else navigate(homeHref);
+          },
+          reduce ? 0 : 200,
+        );
+      }
+
+      function setup() {
+        const panel = document.querySelector<HTMLElement>('[data-case-panel]');
+        document.documentElement.classList.toggle('panel-open', Boolean(panel));
+        restoreScroll();
+        finishRestore();
+
+        if (panel) {
+          sessionStorage.setItem(LAST_CASE_KEY, panel.dataset.casePanel ?? '');
+          panel.querySelector<HTMLElement>('[data-panel-title]')?.focus({ preventScroll: true });
+          document.querySelectorAll<HTMLElement>('[data-panel-close]').forEach((el) =>
+            el.addEventListener('click', (e) => {
+              e.preventDefault();
+              closePanel();
+            }),
+          );
+        } else {
+          // Возвращаем фокус на карточку, из которой открыли кейс
+          const last = sessionStorage.getItem(LAST_CASE_KEY);
+          if (last) {
+            document.querySelector<HTMLElement>(`[data-case-link="${last}"]`)?.focus({ preventScroll: true });
+            sessionStorage.removeItem(LAST_CASE_KEY);
+          }
+        }
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isPanelPage()) closePanel();
+      });
+
+      document.addEventListener('astro:after-swap', restoreScroll);
+      document.addEventListener('astro:page-load', setup);
+    </script>
+  </body>
+</html>

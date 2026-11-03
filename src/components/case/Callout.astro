@@ -1,0 +1,22 @@
+---
+interface Props {
+  tone?: 'green' | 'blue' | 'purple' | 'gray';
+  title?: string;
+  /** Короткая метка над текстом, например «План измерения, не результат» */
+  label?: string;
+}
+const { tone = 'gray', title, label } = Astro.props;
+
+const tones = {
+  green: 'bg-st-green-soft border-st-green/25',
+  blue: 'bg-st-blue-soft border-st-blue/25',
+  purple: 'bg-st-purple-soft border-st-purple/25',
+  gray: 'bg-surface-2 border-line',
+};
+---
+
+<aside class:list={['rounded-2xl border p-5 text-[15px] leading-relaxed sm:p-6 [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5', tones[tone]]}>
+  {label && <p class="mb-1 text-[13px] font-semibold tracking-wide text-muted uppercase">{label}</p>}
+  {title && <p class="mb-1 text-lg font-semibold tracking-tight">{title}</p>}
+  <slot />
+</aside>

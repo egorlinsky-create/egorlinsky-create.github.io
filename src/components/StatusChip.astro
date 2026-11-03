@@ -1,0 +1,26 @@
+---
+interface Props {
+  label: string;
+  tone?: 'green' | 'blue' | 'purple' | 'gray';
+  size?: 'sm' | 'md';
+}
+const { label, tone = 'gray', size = 'sm' } = Astro.props;
+
+const tones = {
+  green: 'bg-st-green-soft text-st-green',
+  blue: 'bg-st-blue-soft text-st-blue',
+  purple: 'bg-st-purple-soft text-st-purple',
+  gray: 'bg-st-gray-soft text-st-gray',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1.5 rounded-full font-medium whitespace-nowrap',
+    size === 'sm' ? 'px-2.5 py-0.5 text-[13px]' : 'px-3 py-1 text-sm',
+    tones[tone],
+  ]}
+>
+  <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
+  {label}
+</span>

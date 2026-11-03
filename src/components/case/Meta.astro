@@ -1,0 +1,30 @@
+---
+interface Props {
+  role: string;
+  team?: string;
+  period?: string;
+  status?: string;
+  scope?: string;
+  bounds?: string;
+}
+const { role, team, period, status, scope, bounds } = Astro.props;
+const rows = [
+  ['Роль', role],
+  ['Границы', bounds],
+  ['Команда', team],
+  ['Объём', scope],
+  ['Срок', period],
+  ['Статус', status],
+].filter(([, v]) => Boolean(v)) as [string, string][];
+---
+
+<dl class="not-prose grid gap-x-6 gap-y-3 rounded-2xl border border-line bg-surface p-5 text-[15px] sm:grid-cols-[120px_1fr] sm:p-6">
+  {
+    rows.map(([k, v]) => (
+      <>
+        <dt class="font-semibold text-muted">{k}</dt>
+        <dd class="-mt-2 leading-snug sm:mt-0">{v}</dd>
+      </>
+    ))
+  }
+</dl>

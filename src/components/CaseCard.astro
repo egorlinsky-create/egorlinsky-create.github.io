@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import fs from 'node:fs';
+import path from 'node:path';
+import StatusChip from './StatusChip.astro';
+import { withBase } from '@/lib/utils';
+
+interface Props {
+  entry: CollectionEntry<'cases'>;
+  index: number;
+}
+const { entry, index } = Astro.props;
+const { cardTitle, summary, company, type, status, accent, cover } = entry.data;
+const hasCover = cover ? fs.existsSync(path.join(process.cwd(), 'public', cover)) : false;
+const href = withBase(`/cases/${entry.id}`);
+---
+
+<a
+  href={href}
+  data-case-link={entry.id}
+  class="group reveal flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-[transform,box-shadow] duration-200 ease-[var(--ease-out)] hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-12px_rgb(0_0_0/0.18)] focus-visible:-translate-y-0.5"
+>
+  <div class="relative aspect-[16/10] overflow-hidden border-b border-line bg-surface-2">
+    {
+      hasCover ? (
+        <img
+          src={withBase(cover!)}
+          alt=""
+          loading={index < 2 ? 'eager' : 'lazy'}
+          decoding="async"
+          class="size-full object-cover transition-transform duration-300 ease-[var(--ease-out)] group-hover:scale-[1.02]"
+        />
+      ) : (
+        <div class="flex size-full flex-col justify-end p-6" aria-hidden="true">
+          <span class="text-sm text-muted">{company}</span>
+          <span class="mt-1 text-2xl font-semibold tracking-tight text-text/80">{cardTitle}</span>
+        </div>
+      )
+    }
+  </div>
+  <div class="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+    <div class="flex flex-wrap items-center gap-2 text-[13px] text-muted">
+      <StatusChip label={status} tone={accent} />
+      <span>{type} · {company}</span>
+    </div>
+    <h3 class="text-lg leading-snug font-semibold tracking-tight text-balance">{cardTitle}</h3>
+    <p class="text-[15px] leading-normal text-muted">{summary}</p>
+    <span class="mt-auto pt-1 text-sm font-medium text-accent">
+      Открыть кейс <span aria-hidden="true" class="inline-block transition-transform group-hover:translate-x-0.5">→</span>
+    </span>
+  </div>
+</a>
