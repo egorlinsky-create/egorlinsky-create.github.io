@@ -10,7 +10,7 @@ accent: "green"
 metric: "170"
 metricLabel: "наблюдений на тестах, 13 правок внесено в макет"
 order: 1
-cover: "/images/erp-meetings/card-erp-v8.jpg"
+cover: "/images/erp-meetings/cover.webp"
 ---
 
 import Figure from '@/components/case/Figure.astro';
@@ -19,7 +19,7 @@ import Callout from '@/components/case/Callout.astro';
 import Meta from '@/components/case/Meta.astro';
 import Outcome from '@/components/case/Outcome.astro';
 
-<Figure src="/images/erp-meetings/hero-erp-v5.jpg" alt="Раздел встреч и задач в ERP" />
+<Figure src="/images/erp-meetings/cover.webp" alt="Встреча в ERP и кабинет клиента: реальные макеты в мокапе" />
 
 <Meta
   role="Требования, гипотезы, прототипы в Figma, модерация ~20 сессий, отчёты. Сценарии — вместе с Product Owner и UX lead"
@@ -43,8 +43,6 @@ import Outcome from '@/components/case/Outcome.astro';
 
 «Нескучные финансы» (НФ) — сервис финансовых директоров для бизнеса; его ERP — система для управления работой финансовых директоров (ФД): клиенты, сделки, распределение, команда. ФД сами назначали встречи и вели задачи в Google-таблицах. Руководитель видел работу ровно настолько, насколько аккуратно сотрудник заполнял свою таблицу: общего плана, свода нагрузки и контроля выполнения не было.
 
-<Figure src="/images/erp-meetings/erp-process-before-after.jpg" caption="**Процесс до и после по трём ролям.** Схема для портфолио по тексту кейса" />
-
 Задача — перенести процесс в ERP и связать его с кабинетом клиента. Сложность в том, что у раздела три роли с разными целями:
 
 | Роль | Что нужно | Чего нельзя допустить |
@@ -53,13 +51,20 @@ import Outcome from '@/components/case/Outcome.astro';
 | Руководитель | Нагрузка и отклонения по команде | Контроль ценой длинных записей |
 | Клиент | Видеть совместную работу | Видеть внутреннюю работу ФД |
 
-<Figure src="/images/erp-meetings/erp-mockup.jpg" caption="**Встреча в ERP и выбор вида работы** с правилами видимости. Реальные макеты в мокапе" />
-
 ## Модель проверяли до запуска: ~20 модерируемых сессий, 3 итерации
 
 В интерактивном прототипе участники планировали и завершали встречу, создавали задачу без срока, разбирались с просрочкой, вносили время и собирали свод за месяц. Проверяли не расположение кнопок, а саму модель: назначение полей, связь встречи и задачи, правила видимости, смысл строки трудозатрат.
 
 Наблюдения с таймкодами лежали рядом с экраном. Из них выделяли правку UI или запись в бэклог.
+
+<Figures>
+  <Figure src="/images/erp-meetings/scenario-meeting.webp" caption="**Сценарий задания:** рабочая ситуация участника — планирование и завершение встречи" />
+  <Figure src="/images/erp-meetings/research-scenario.webp" caption="**Сценарий с задачей:** создать, переименовать и завершить задачу" />
+</Figures>
+
+<Figure src="/images/erp-meetings/research-time-screen.webp" caption="**Экран теста:** внесение трудозатрат в интерактивном прототипе" />
+
+<Figure src="/images/erp-meetings/research-hypotheses.webp" caption="**Гипотезы для проверки** по реестру задач" />
 
 <Callout tone="purple">
   **Прототипы раздела теперь собираю в агентах Claude и Codex** на компонентах дизайн-системы. Участник сам вводит время, создаёт задачи и фильтрует реестр, а сломанные связки сложного Figma-прототипа больше не создают ложных затруднений. Первая итерация для команды — за день вместо 1–2 недель.
@@ -77,7 +82,7 @@ import Outcome from '@/components/case/Outcome.astro';
 
 <p class="text-[15px] text-muted">Оценки субъективные: например, за задание с реестром поставили 4–5, хотя 4 из 5 не нашли вход с первой попытки. Поэтому решения опирались на наблюдения за действиями, а не на баллы.</p>
 
-<Figure src="/images/erp-meetings/research-report-evidence.png" caption="**Фрагмент исследовательского отчёта:** экран, карточки наблюдений с таймкодами, блок бэклога. Имена заменены на роли" />
+<Figure src="/images/erp-meetings/research-report-evidence.webp" caption="**Фрагмент исследовательского отчёта:** экран, карточки наблюдений с таймкодами, блок бэклога. Имена заменены на роли" />
 
 Метод и выборка подробно — в кейсе [«Исследование поменяло задачу»](/cases/research-appeals).
 
@@ -89,7 +94,12 @@ import Outcome from '@/components/case/Outcome.astro';
 
 **Цена:** создание отдельной задачи из пункта чек-листа не вошло в эту версию и осталось в бэклоге.
 
-<Figure src="/images/erp-meetings/erp-before-after.gif" caption="**Было → стало:** форма встречи до и после тестов. Кадры — реальные макеты, анимация собрана для портфолио" />
+<Figures>
+  <Figure src="/images/erp-meetings/nf-meeting-before.webp" caption="**Было:** форма по внутренней методике — ожидания, план, результат, следующие шаги" />
+  <Figure src="/images/erp-meetings/nf-meeting-after.webp" caption="**Стало:** чек-лист вместо четырёх полей" />
+</Figures>
+
+<Figure src="/images/erp-meetings/research-decision.webp" caption="**Правка UI по итогам теста**" />
 
 ## «Связано с клиентом» и «видно клиенту» — разные вопросы
 
@@ -97,10 +107,7 @@ import Outcome from '@/components/case/Outcome.astro';
 
 **Решение:** правила видимости объясняются прямо при выборе вида работы; внутреннюю задачу можно связать со сделкой, не показывая клиенту.
 
-<Figures>
-  <Figure src="/images/erp-meetings/erp-visibility-model.jpg" caption="**Модель записей:** связь со сделкой и видимость клиенту — разные свойства" />
-  <Figure src="/images/erp-meetings/nf-visibility.png" caption="**Выбор вида работы:** внутренняя задача остаётся в ERP, совместная видна клиенту" />
-</Figures>
+<Figure src="/images/erp-meetings/nf-visibility.webp" caption="**Выбор вида работы:** внутренняя задача остаётся в ERP, совместная видна клиенту" />
 
 ## Ввод времени был понятен, чтение — нет: сменили только отображение
 
@@ -125,9 +132,11 @@ import Outcome from '@/components/case/Outcome.astro';
 
 В 2026 году встречи и задачи собраны в общий список в кабинете клиента — в продакшене. У встречи появились метки содержания (например, «Презентация отчётности») — они отвечают на вопрос «о чём встреча» и не смешиваются с типом записи и статусом. Завершённая встреча хранит план и факт, ссылку на презентацию и связанные решения.
 
+<Figure src="/images/erp-meetings/nf-meetings-label-picker.webp" caption="**Метки содержания встречи:** «о чём встреча» отдельно от типа и статуса. Данные демонстрационные" />
+
 <Figures>
-  <Figure src="/images/erp-meetings/nf-meetings-list-current.png" caption="**Общий план встреч и задач** в кабинете клиента. Данные демонстрационные" />
-  <Figure src="/images/erp-meetings/nf-meetings-detail-current.png" caption="**Завершённая встреча:** план и факт, метки, ссылка на презентацию, решения" />
+  <Figure src="/images/erp-meetings/nf-meetings-list-current.webp" caption="**Общий план встреч и задач** в кабинете клиента. Данные демонстрационные" />
+  <Figure src="/images/erp-meetings/nf-meetings-detail-current.webp" caption="**Завершённая встреча:** план и факт, метки, ссылка на презентацию, решения" />
 </Figures>
 
 ## Результат

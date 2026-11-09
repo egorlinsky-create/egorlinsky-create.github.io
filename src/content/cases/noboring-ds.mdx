@@ -10,7 +10,7 @@ accent: "purple"
 metric: "87%"
 metricLabel: "экземпляров в макетах ERP — из библиотеки"
 order: 3
-cover: "/images/noboring-ds/card-ds-v8.jpg"
+cover: "/images/noboring-ds/cover.webp"
 ---
 
 import Figure from '@/components/case/Figure.astro';
@@ -19,7 +19,7 @@ import Callout from '@/components/case/Callout.astro';
 import Meta from '@/components/case/Meta.astro';
 import Outcome from '@/components/case/Outcome.astro';
 
-<Figure src="/images/noboring-ds/hero-ds-v5.jpg" alt="Noboring Design System: библиотека компонентов ERP" />
+<Figure src="/images/noboring-ds/cover.webp" alt="Noboring Design System: компоненты библиотеки в мокапе" />
 
 <Meta
   role="Ведущий UI-дизайнер: архитектура библиотеки, переменные и привязки, компоненты, документация, контракт со Storybook"
@@ -66,8 +66,6 @@ import Outcome from '@/components/case/Outcome.astro';
 
 **Решение: режимы темы есть только в семантике.** Компонентные токены имеют один режим и ссылаются на роли. Поэтому кнопка не знает о теме: смена Light/Dark переназначает роль на другой примитив, а компонент, его варианты и состояния не меняются. Вторичный фон в тёмной теме — не «чуть темнее», а другой конец шкалы (50 → 900): роль сохраняет контраст с текстом, а не оттенок.
 
-<Figure src="/images/noboring-ds/ds-token-chain.gif" caption="**Смена темы по реальным alias-цепочкам Button:** переключаются только связи семантики, компонентные токены и сам компонент не меняются" />
-
 **Как токены ложатся на атомарные уровни:**
 
 - **Атом** — Button, Icon, Label: берут только компонентные токены.
@@ -76,7 +74,9 @@ import Outcome from '@/components/case/Outcome.astro';
 
 **Цена:** имён и связей становится заметно больше. Их нужно последовательно именовать, проверять при изменениях и передавать фронтенду по общей модели.
 
-<Figure src="/images/noboring-ds/ds-v3-token-modes-proof.png" caption="**Схема по текущим alias-привязкам:** примитивы → семантика → компонентный токен" />
+<Figure src="/images/noboring-ds/ds-variable-scopes.webp" caption="**Области применения переменных:** токен виден только там, где его можно применить" />
+
+<Figure src="/images/noboring-ds/ds-v3-token-modes-proof.webp" caption="**Схема по текущим alias-привязкам:** примитивы → семантика → компонентный токен" />
 
 <details>
 <summary>Все коллекции и режимы</summary>
@@ -100,7 +100,10 @@ Input собирает Label, .Field и опциональный Description. М
 
 **Цена:** много опций требуют понятных названий и документации; наружу нужно раскрывать только те свойства, что нужны потребителю.
 
-<Figure src="/images/noboring-ds/ds-field-states.png" caption="**Компонент .Field** из библиотеки Noboring DS: семь состояний взаимодействия. Экспорт из Figma" />
+<Figures>
+  <Figure src="/images/noboring-ds/ds-v3-anatomy-proof.webp" caption="**Анатомия Input:** Label + .Field + Description, состояние живёт в .Field" />
+  <Figure src="/images/noboring-ds/ds-v3-inputs-playground.webp" caption="**Состояния поля** в библиотеке" />
+</Figures>
 
 ## В плотной ERP система описывает поведение, а не только внешний вид
 
@@ -108,12 +111,17 @@ Input собирает Label, .Field и опциональный Description. М
 
 **Цена:** часть значений скрыта до раскрытия, поэтому счётчик обязан показывать, что скрыто, и давать доступ к просмотру.
 
+<Figure src="/images/noboring-ds/08-select-composition.webp" caption="**Общая основа — разные сценарии выбора:** одна строка → счётчик → раскрытие со скроллом" />
+
 <Figures>
-  <Figure src="/images/noboring-ds/ds-v3-cells-text-guide.png" caption="**Гайд ячейки:** наведение и клики с правами и без прав, ошибка" />
-  <Figure src="/images/noboring-ds/ds-v3-multiselect-focus.png" caption="**Мультиселект:** счётчик и раскрытие значений" />
+  <Figure src="/images/noboring-ds/ds-v3-filter-overflow-guide.webp" caption="**Гайд фильтров:** применённые фильтры схлопываются в кнопку" />
+  <Figure src="/images/noboring-ds/ds-v3-filter-range-guide.webp" caption="**Фильтр по периоду и диапазону** и его состояния" />
 </Figures>
 
-<Figure src="/images/noboring-ds/ds-mockup.jpg" caption="**Мультиселект из библиотеки** и тот же контракт в Storybook (тёмная тема)" />
+<Figures>
+  <Figure src="/images/noboring-ds/ds-v3-cells-text-guide.webp" caption="**Гайд ячейки:** наведение и клики с правами и без прав, ошибка" />
+  <Figure src="/images/noboring-ds/ds-v3-multiselect-focus.webp" caption="**Мультиселект:** счётчик и раскрытие значений" />
+</Figures>
 
 ## Доступность: пользователи не различали статусы — чипсы переделал по замерам контраста
 
@@ -122,19 +130,15 @@ Input собирает Label, .Field и опциональный Description. М
 **Итог:** контраст новых чипсов — от 9,9:1 до 13,4:1, это выше порога WCAG AAA для обычного текста (7:1). В прошлой версии большинство чипсов не проходили проверку для обычного текста.
 
 <Figures>
-  <Figure src="/images/noboring-ds/ds-chips-contrast.png" caption="**Замер контраста:** сверху — проверки прошлых чипсов, снизу — новые чипсы из библиотеки" />
-  <Figure src="/images/noboring-ds/ds-chips-competitors.png" caption="**Сравнение** с Airtable, NocoDB и Notion" />
 </Figures>
 
 ## Мост в код: токены через JSON и проверяемый контракт со Storybook
 
 Архитектуру переменных согласовали с фронтендом: я передаю значения через JSON, разработчики применяют их по согласованным именам. Отдельно я собрал Storybook-стенд, который переводит свойства компонентов Figma в публичный API React-компонентов и проверяет их автоматически: Controls, темы, viewport, interaction и accessibility. Повторная проверка пропускает неизменившиеся компоненты.
 
-<Figure src="/images/noboring-ds/ds-figma-to-react.gif" caption="**Figma → React:** анатомия Input в библиотеке и те же свойства как параметры компонента в Storybook" />
-
 <Figures>
-  <Figure src="/images/noboring-ds/01-storybook-button-controls-light.png" caption="**Button:** подпись, тип, размер и доступность через Controls" />
-  <Figure src="/images/noboring-ds/03-storybook-textfield-controls-dark.png" caption="**TextField:** свойства Figma сопоставлены параметрам React-компонента" />
+  <Figure src="/images/noboring-ds/01-storybook-button-controls-light.webp" caption="**Button:** подпись, тип, размер и доступность через Controls" />
+  <Figure src="/images/noboring-ds/03-storybook-textfield-controls-dark.webp" caption="**TextField:** свойства Figma сопоставлены параметрам React-компонента" />
 </Figures>
 
 ## Система меняется от продуктовой потребности
@@ -143,7 +147,7 @@ File Card не подходила для inline editor, где уже были �
 
 **Спор о файлах в inline-полях.** По логике CRUDL файл в inline-поле прикреплялся только в отдельном режиме редактирования. Я настаивал, чтобы просмотр, прикрепление и удаление работали сразу, без перехода в режим. Команда выбрала вариант с режимом и выпустила его без теста. После релиза пользователи назвали его неудобным и попросили то, что я предлагал: прикреплять и редактировать сразу. Вывод для меня: если в команде спор о взаимодействии, аргументом должен быть короткий тест до релиза, а не правило или чьё-то мнение.
 
-<Figure src="/images/noboring-ds/ds-change-file.png" caption="**Запись Changes Log** от 29 апреля 2025: причина выделения File Item" />
+<Figure src="/images/noboring-ds/ds-change-file.webp" caption="**Запись Changes Log** от 29 апреля 2025: причина выделения File Item" />
 
 ## Результат
 
@@ -185,14 +189,14 @@ Storybook — инженерный стенд для проверки согла
 <summary>Справочные материалы: исходные гайды библиотеки</summary>
 
 <Figures>
-  <Figure src="/images/noboring-ds/typography.png" caption="**Типографика**" />
-  <Figure src="/images/noboring-ds/palette.png" caption="**Палитра**" />
-  <Figure src="/images/noboring-ds/spacing.png" caption="**Интервалы**" />
-  <Figure src="/images/noboring-ds/icons-documentation-original.png" caption="**Иконки:** исходный контейнер документации" />
-  <Figure src="/images/noboring-ds/nf-button-types.png" caption="**Button:** типы и контексты" />
-  <Figure src="/images/noboring-ds/ds-annotations.png" caption="**Компонент Annotation**" />
+  <Figure src="/images/noboring-ds/typography.webp" caption="**Типографика**" />
+  <Figure src="/images/noboring-ds/palette.webp" caption="**Палитра**" />
+  <Figure src="/images/noboring-ds/spacing.webp" caption="**Интервалы**" />
+  <Figure src="/images/noboring-ds/icons-documentation-original.webp" caption="**Иконки:** исходный контейнер документации" />
+  <Figure src="/images/noboring-ds/nf-button-types.webp" caption="**Button:** типы и контексты" />
+  <Figure src="/images/noboring-ds/ds-annotations.webp" caption="**Компонент Annotation**" />
 </Figures>
 
-<Figure src="/images/noboring-ds/ds-slots.png" caption="**Исторический слотовый подход** — примерно за два года до нативных слотов Figma (оценка автора)" />
+<Figure src="/images/noboring-ds/ds-slots.webp" caption="**Исторический слотовый подход** — примерно за два года до нативных слотов Figma (оценка автора)" />
 
 </details>

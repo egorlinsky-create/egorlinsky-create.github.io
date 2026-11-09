@@ -1,0 +1,21 @@
+---
+/** Hero кейса: та же сцена, что на обложке карточки, крупно. Данные демонстрационные. */
+import CaseCover from '@/components/CaseCover';
+
+interface Props {
+  slug: string;
+  tone?: 'green' | 'blue' | 'purple' | 'gray';
+  caption?: string;
+}
+const { slug, tone = 'gray', caption = 'Реконструкция интерфейса по макетам, данные демонстрационные' } = Astro.props;
+---
+
+<figure class="not-prose">
+  <div
+    class="case-cover relative aspect-[16/10] overflow-hidden rounded-2xl border border-line"
+    style={`--tone: var(--c-${tone}); --tone-soft: var(--c-${tone}-soft);`}
+  >
+    <CaseCover slug={slug} />
+  </div>
+  <figcaption class="mt-3 text-[13px] text-muted">{caption}</figcaption>
+</figure>

@@ -10,7 +10,7 @@ accent: "gray"
 metric: "104"
 metricLabel: "наблюдения поменяли постановку задачи"
 order: 4
-cover: "/images/research-appeals/card-research-v8.jpg"
+cover: "/images/research-appeals/cover.webp"
 ---
 
 import Figure from '@/components/case/Figure.astro';
@@ -19,7 +19,7 @@ import Callout from '@/components/case/Callout.astro';
 import Meta from '@/components/case/Meta.astro';
 import Outcome from '@/components/case/Outcome.astro';
 
-<Figure src="/images/research-appeals/hero-research-v5.jpg" alt="Реестр входящих обращений и карточки наблюдений" />
+<Figure src="/images/research-appeals/cover.webp" alt="Реестр входящих обращений и карточки наблюдений: реальные экраны в мокапе" />
 
 <Meta
   role="Требования бизнеса, гипотезы, интерактивные прототипы, модерация, анализ и отчёты. Сценарии — вместе с Product Owner и UX lead"
@@ -37,17 +37,18 @@ import Outcome from '@/components/case/Outcome.astro';
 
 Клиенты обращаются с вопросами и проблемами; учёт вёлся вручную. Команда рассчитывала уложить его в существующую модель рисков через метки. Исследование должно было проверить этот подход, а затем — создание, обработку и закрытие обращения в ERP и кабинете клиента.
 
-<Figure src="/images/research-appeals/research-mockup.jpg" caption="**Форма обращения в ERP** и карточки наблюдений из отчёта. Реальные экраны в мокапе" />
-
 ## Метод: рабочая ситуация, действие без подсказок, обсуждение после
 
 Участник получал рабочую ситуацию и решал её в прототипе, думая вслух. Задание делилось на исследовательский вопрос команды, ситуацию для участника, обсуждение и оценку простоты по шкале 1–5 с объяснением. Наблюдения с таймкодами лежали рядом с экраном, из них выделялись вывод, правка UI или запись в бэклог.
 
-<Figure src="/images/research-appeals/research-observations.gif" caption="**Как наблюдения ложатся на экран:** карточки отчёта появляются рядом с реестром обращений" />
+<Figures>
+  <Figure src="/images/research-appeals/rating-scale.webp" caption="**Шкала оценки простоты** после каждого задания" />
+  <Figure src="/images/research-appeals/debrief-questions.webp" caption="**Вопросы интервью** после теста" />
+</Figures>
 
 <Figures>
-  <Figure src="/images/research-appeals/task-structure.png" caption="**Структура задания** из FigJam: вопрос команды, ситуация, обсуждение, оценка" />
-  <Figure src="/images/research-appeals/moderator-guide.png" caption="**Правила модерации** из гайда" />
+  <Figure src="/images/research-appeals/task-structure.webp" caption="**Структура задания** из FigJam: вопрос команды, ситуация, обсуждение, оценка" />
+  <Figure src="/images/research-appeals/moderator-guide.webp" caption="**Правила модерации** из гайда" />
 </Figures>
 
 ## 6 заданий — 6 гипотез: проверяли весь путь обращения
@@ -65,18 +66,13 @@ import Outcome from '@/components/case/Outcome.astro';
 
 <p class="text-[15px] text-muted">Главный урок таблицы: метки получили 5 · 5 · 5, но наблюдения показали, что это не та модель. Решения принимались по действиям участников, а не по баллам. Три участника — выборка для поиска проблем, а не для статистики.</p>
 
-<Figure src="/images/research-appeals/vo-test-scenarios-board.png" caption="**Доска теста в FigJam:** стартовый скрипт, 6 заданий с ситуацией, вопросами и гипотезой, интервью после теста" />
-
 ## Метка риска не заменяет обращение — перешли к отдельному реестру
 
 От метки «Входящее обращение» участники ждали возможности записать само содержание обращения, а само обращение могло вообще не относиться к риску. Классификация риска и обработка обращения — разные задачи: у обращения своё содержание, ответственный и движение по процессу.
 
 **Итог:** после проверки меток перешли к самостоятельному реестру и проверяли уже создание, просмотр и обработку обращения.
 
-<Figures>
-  <Figure src="/images/research-appeals/vo-risk-drawer-labels.png" caption="**Исходная карточка сигнала/риска (MVP):** метки внутри существующей модели" />
-  <Figure src="/images/research-appeals/vo-evidence-risk.png" caption="**Карточка отчёта, эпизод 14:20:** обращение не всегда связано с риском" />
-</Figures>
+<Figure src="/images/research-appeals/vo-evidence-risk.webp" caption="**Карточка отчёта, эпизод 14:20:** обращение не всегда связано с риском" />
 
 ## Клиенту сложно выбрать тему — классификацию предложили перенести на сторону команды
 
@@ -84,7 +80,9 @@ import Outcome from '@/components/case/Outcome.astro';
 
 **Бэклог:** убрать выбор темы у клиента и распределять обращения через ФД первого уровня (L1).
 
-<Figure src="/images/research-appeals/vo-client-create.png" caption="**Клиентская форма:** пустое и заполненное состояния, тема, комментарий, вложение" />
+<Figure src="/images/research-appeals/vo-evidence-client.webp" caption="**Предложение участницы** по клиентской форме. Запись исследователя" />
+
+<Figure src="/images/research-appeals/vo-client-create.webp" caption="**Клиентская форма:** пустое и заполненное состояния, тема, комментарий, вложение" />
 
 ## В форме смешивались источник и канал, а модель ответственности не была согласована
 
@@ -92,7 +90,7 @@ import Outcome from '@/components/case/Outcome.astro';
 
 **Бэклог:** мультиселект ответственных; связанный риск карточкой с переходом. Объединение ответственных и участников не подтверждено.
 
-<Figure src="/images/research-appeals/vo-erp-create.png" caption="**Форма в ERP:** сделка, тема, описание, источник, сроки, инициатор, участники, связи" />
+<Figure src="/images/research-appeals/vo-erp-create.webp" caption="**Форма в ERP:** сделка, тема, описание, источник, сроки, инициатор, участники, связи" />
 
 <Callout label="Из карточек отчёта — записи исследователя, не дословные цитаты">
   - АМ и «Инициатива КК» — каналы, через которые обращение попадает в систему, а не его источник. Команде важно другое: пришло обращение от внешнего или внутреннего клиента.
@@ -105,8 +103,8 @@ import Outcome from '@/components/case/Outcome.astro';
 Участница не заметила акцентный блок «Взять в работу» и нашла статус только после явных подсказок. Визуальный акцент не обеспечил понимания точки входа: нужны понятное действие и объяснение текущего состояния. Эпизод не считаю успешным выполнением задания.
 
 <Figures>
-  <Figure src="/images/research-appeals/vo-processing.png" caption="**Карточка обращения:** блок «Взять в работу», управление ситуацией, комментарии" />
-  <Figure src="/images/research-appeals/vo-evidence-status.png" caption="**Заметка отчёта:** статус найден после подсказок" />
+  <Figure src="/images/research-appeals/vo-processing.webp" caption="**Карточка обращения:** блок «Взять в работу», управление ситуацией, комментарии" />
+  <Figure src="/images/research-appeals/vo-evidence-status.webp" caption="**Заметка отчёта:** статус найден после подсказок" />
 </Figures>
 
 ## Закрыть обращение — это ещё и получить обратную связь клиента
@@ -117,12 +115,9 @@ import Outcome from '@/components/case/Outcome.astro';
 
 Участники также сократили статусы для клиента: «На рассмотрении» и «Ожидаем ОС» (обратную связь) лишние, нужны «В работе» и «Решено»; обращение нельзя отклонить или закрыть без решения.
 
-<Figure src="/images/research-appeals/iso2-vo.gif" caption="**Путь обращения по итогам теста:** «Новое» → «В работе» → «Решено», закрытие — после обратной связи клиента. Иллюстрация для портфолио; в макетах — бэклог" />
+<Figure src="/images/research-appeals/vo-backlog-close.webp" caption="**Бэклог по закрытию обращения** из отчёта" />
 
-<Figures>
-  <Figure src="/images/research-appeals/vo-status-model.png" caption="**Исходная статусная модель v1.0** — до правок по тесту: именно её участники предложили сократить" />
-  <Figure src="/images/research-appeals/vo-evidence-close.png" caption="**Карточки отчёта:** запрос обратной связи при закрытии и реакция на модалку" />
-</Figures>
+<Figure src="/images/research-appeals/vo-evidence-close.webp" caption="**Карточки отчёта:** запрос обратной связи при закрытии и реакция на модалку" />
 
 <details>
 <summary>Реестр: способ контроля зависит от роли</summary>
@@ -131,15 +126,13 @@ import Outcome from '@/components/case/Outcome.astro';
 
 **Бэклог:** согласовать сроки и приоритеты SLA, учитывать время от поступления до решения.
 
-<Figure src="/images/research-appeals/vo-registry.png" caption="**Реестр ВО:** статус, срок решения, дедлайн, признаки просрочки. Демонстрационные данные" />
+<Figure src="/images/research-appeals/vo-registry.webp" caption="**Реестр ВО:** статус, срок решения, дедлайн, признаки просрочки. Демонстрационные данные" />
 
 </details>
 
 ## Результат
 
 Исследование изменило постановку задачи: вместо расширения меток понадобился отдельный рабочий процесс с реестром, ответственными, коммуникацией и закрытием через обратную связь.
-
-<Figure src="/images/research-appeals/research-observation-decision-map.jpg" caption="**От наблюдения к решению:** пять выводов теста и их статус" />
 
 | Наблюдение | К чему привело | Статус |
 |---|---|---|

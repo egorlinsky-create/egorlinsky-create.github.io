@@ -2,12 +2,14 @@
 import { getCollection } from 'astro:content';
 import CaseCard from './CaseCard.astro';
 import Figure from './case/Figure.astro';
-import HeroDemo from '@/prototypes/HeroDemo';
 import fs from 'node:fs';
 import path from 'node:path';
 import { site } from '@/site';
+import { withBase } from '@/lib/utils';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+// Крупная карточка — первый кейс с настоящей обложкой
+const leadId = (cases.find((c) => c.data.cover && fs.existsSync(path.join(process.cwd(), 'public', c.data.cover))) ?? cases[0])?.id;
 
 const craftAll = [
   { src: '/images/home/craft-1-mode.jpg', caption: '**Режим подборки виден всегда.** Баннер с названием и выходом, счётчик ФД, сохранённые фильтры' },
@@ -64,7 +66,15 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
         Работает ввод данных, нет сломанных связок, как в Figma-прототипах. Первая итерация для команды — за день вместо 1–2 недель.
       </p>
       </div>
-      <HeroDemo client:visible />
+      <figure class="relative mx-auto w-full max-w-[520px]">
+        <img
+          src={withBase('/images/home/portrait.webp')}
+          alt="Евгений Горлинский — иллюстрированный портрет"
+          width="1254"
+          height="1254"
+          class="aspect-square w-full rounded-[28px] border border-line object-cover shadow-[0_30px_80px_-40px_rgb(20_20_40/0.45)]"
+        />
+      </figure>
     </section>
 
     <!-- Кейсы -->
@@ -83,7 +93,7 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
         ) : (
           <div class="case-grid mt-10">
             {cases.map((entry, index) => (
-              <CaseCard entry={entry} index={index} lead={index === 0} />
+              <CaseCard entry={entry} index={index} lead={entry.id === leadId} />
             ))}
           </div>
         )
