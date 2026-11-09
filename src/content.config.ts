@@ -14,6 +14,9 @@ const cases = defineCollection({
     accent: z.enum(['green', 'blue', 'purple', 'gray']).default('gray'),
     order: z.number(),
     cover: z.string().optional(),
+    /** Главная цифра кейса для обложки-заглушки: «2 дня», «87%» */
+    metric: z.string().max(14).optional(),
+    metricLabel: z.string().max(80).optional(),
     draft: z.boolean().default(false),
   }),
 });

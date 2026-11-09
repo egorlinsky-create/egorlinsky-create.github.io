@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import CaseCard from './CaseCard.astro';
 import Figure from './case/Figure.astro';
+import HeroDemo from '@/prototypes/HeroDemo';
 import { site } from '@/site';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
@@ -18,19 +19,20 @@ const craft = [
   <header class="no-print flex items-center justify-between py-6">
     <a href={import.meta.env.BASE_URL} class="font-semibold tracking-tight">{site.name}</a>
     <nav class="flex items-center gap-5 text-sm text-muted">
-      <a href="#cases" class="hover:text-text">Кейсы</a>
+      <a href="#cases" class="hidden hover:text-text sm:inline">Кейсы</a>
       <a href="#process" class="hidden hover:text-text sm:inline">Как работаю</a>
-      <a href={site.telegram} class="rounded-full bg-text px-4 py-2 font-medium text-bg hover:opacity-90" target="_blank" rel="noopener">
-        Написать в Telegram
+      <a href={site.telegram} class="rounded-full bg-text px-4 py-2 font-medium whitespace-nowrap text-bg hover:opacity-90" target="_blank" rel="noopener">
+        <span class="sm:hidden">Telegram</span><span class="hidden sm:inline">Написать в Telegram</span>
       </a>
     </nav>
   </header>
 
   <main id="main">
     <!-- Интро -->
-    <section class="pt-10 pb-16 sm:pt-20 sm:pb-24">
+    <section class="grid items-center gap-12 pt-10 pb-16 sm:pt-16 sm:pb-24 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+      <div>
       <p class="text-sm text-muted">{site.role} · {site.city}</p>
-      <h1 class="mt-4 max-w-4xl text-[clamp(2.1rem,5.2vw,4rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-balance">
+      <h1 class="mt-4 max-w-4xl text-[clamp(2.1rem,3.7vw,3.1rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-balance">
         Проектирую сложные B2B-системы — и собираю прототипы в AI-агентах
       </h1>
       <p class="mt-6 max-w-2xl text-lg text-muted text-pretty">
@@ -51,13 +53,12 @@ const craft = [
         >
       </div>
 
-      <div class="mt-12 max-w-3xl rounded-[var(--radius-card)] border border-line bg-accent-soft p-5 sm:p-6">
-        <p class="text-[15px] leading-relaxed">
-          <strong class="font-semibold">AI-native процесс.</strong> Прототипы собираю в агентах Claude и Codex на компонентах дизайн-системы. По уровню
-          они близки к проду: работает ввод данных, и нет сломанных связок, как в сложных Figma-прототипах. Первая итерация для обсуждения с командой —
-          за день вместо 1–2 недель.
-        </p>
+      <p class="mt-8 max-w-xl text-[15px] text-muted text-pretty">
+        <strong class="font-semibold text-text">AI-native процесс:</strong> прототипы собираю в агентах Claude и Codex на компонентах дизайн-системы.
+        Работает ввод данных, нет сломанных связок, как в Figma-прототипах. Первая итерация для команды — за день вместо 1–2 недель.
+      </p>
       </div>
+      <HeroDemo client:visible />
     </section>
 
     <!-- Кейсы -->
@@ -74,9 +75,9 @@ const craft = [
             Кейсов пока нет. Добавь файл в src/content/cases — карточка появится здесь.
           </p>
         ) : (
-          <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:gap-6">
+          <div class="case-grid mt-10">
             {cases.map((entry, index) => (
-              <CaseCard entry={entry} index={index} />
+              <CaseCard entry={entry} index={index} lead={index === 0} />
             ))}
           </div>
         )

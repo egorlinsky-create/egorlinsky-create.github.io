@@ -8,19 +8,31 @@ import { withBase } from '@/lib/utils';
 interface Props {
   entry: CollectionEntry<'cases'>;
   index: number;
+  /** Главный кейс: на десктопе во всю ширину, обложка слева */
+  lead?: boolean;
 }
-const { entry, index } = Astro.props;
-const { cardTitle, summary, company, type, status, accent, cover } = entry.data;
+const { entry, index, lead = false } = Astro.props;
+const { cardTitle, summary, company, type, status, accent, cover, metric, metricLabel } = entry.data;
 const hasCover = cover ? fs.existsSync(path.join(process.cwd(), 'public', cover)) : false;
 const href = withBase(`/cases/${entry.id}`);
+const toneVars = `--tone: var(--c-${accent}); --tone-soft: var(--c-${accent}-soft);`;
 ---
 
 <a
   href={href}
   data-case-link={entry.id}
-  class="group reveal flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-[transform,box-shadow] duration-200 ease-[var(--ease-out)] hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-12px_rgb(0_0_0/0.18)] focus-visible:-translate-y-0.5"
+  style={toneVars}
+  class:list={[
+    'case-card group reveal flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-[transform,box-shadow] duration-200 ease-[var(--ease-out)] hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-12px_rgb(0_0_0/0.18)] focus-visible:-translate-y-0.5',
+    lead && 'case-card--lead sm:col-span-2 lg:flex-row',
+  ]}
 >
-  <div class="relative aspect-[16/10] overflow-hidden border-b border-line bg-surface-2">
+  <div
+    class:list={[
+      'case-cover relative aspect-[16/10] shrink-0 overflow-hidden border-b border-line bg-surface-2',
+      lead && 'lg:aspect-auto lg:min-h-[380px] lg:w-[58%] lg:border-r lg:border-b-0',
+    ]}
+  >
     {
       hasCover ? (
         <img
@@ -31,21 +43,21 @@ const href = withBase(`/cases/${entry.id}`);
           class="size-full object-cover transition-transform duration-300 ease-[var(--ease-out)] group-hover:scale-[1.02]"
         />
       ) : (
-        <div class="flex size-full flex-col justify-end p-6" aria-hidden="true">
-          <span class="text-sm text-muted">{company}</span>
-          <span class="mt-1 text-2xl font-semibold tracking-tight text-text/80">{cardTitle}</span>
+        <div class="case-metric" aria-hidden="true">
+          <strong>{metric ?? company}</strong>
+          {metricLabel && <span>{metricLabel}</span>}
         </div>
       )
     }
   </div>
-  <div class="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+  <div class:list={['case-body flex flex-1 flex-col gap-3 p-5 sm:p-6', lead && 'lg:justify-center lg:gap-4 lg:p-10']}>
     <div class="flex flex-wrap items-center gap-2 text-[13px] text-muted">
       <StatusChip label={status} tone={accent} />
       <span>{type} · {company}</span>
     </div>
-    <h3 class="text-lg leading-snug font-semibold tracking-tight text-balance">{cardTitle}</h3>
-    <p class="text-[15px] leading-normal text-muted">{summary}</p>
-    <span class="mt-auto pt-1 text-sm font-medium text-accent">
+    <h3 class:list={['text-lg leading-snug font-semibold tracking-tight text-balance', lead && 'lg:text-[1.75rem] lg:leading-tight']}>{cardTitle}</h3>
+    <p class:list={['text-[15px] leading-normal text-muted', lead && 'lg:text-[17px]']}>{summary}</p>
+    <span class:list={['pt-1 text-sm font-medium text-accent', lead ? 'mt-auto lg:mt-4' : 'mt-auto']}>
       Открыть кейс <span aria-hidden="true" class="inline-block transition-transform group-hover:translate-x-0.5">→</span>
     </span>
   </div>
