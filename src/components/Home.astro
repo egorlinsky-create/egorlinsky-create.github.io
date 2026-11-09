@@ -5,11 +5,12 @@ import Figure from './case/Figure.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 import { site } from '@/site';
+import HeroDemo from '@/prototypes/HeroDemo';
 import { withBase } from '@/lib/utils';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
-// Крупная карточка — первый кейс с настоящей обложкой
-const leadId = (cases.find((c) => c.data.cover && fs.existsSync(path.join(process.cwd(), 'public', c.data.cover))) ?? cases[0])?.id;
+// Крупная карточка — первый кейс по порядку (order: 0)
+const leadId = cases[0]?.id;
 
 const craftAll = [
   { src: '/images/home/craft-1-mode.jpg', caption: '**Режим подборки виден всегда.** Баннер с названием и выходом, счётчик ФД, сохранённые фильтры' },
@@ -39,7 +40,19 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
     <!-- Интро -->
     <section class="grid items-center gap-12 pt-10 pb-16 sm:pt-16 sm:pb-24 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
       <div>
-      <p class="text-sm text-muted">{site.role} · {site.city}</p>
+      <div class="flex items-center gap-3">
+        <img
+          src={withBase('/images/home/portrait.webp')}
+          alt="Евгений Горлинский"
+          width="56"
+          height="56"
+          class="size-14 rounded-full border border-line object-cover"
+        />
+        <div class="text-sm leading-snug">
+          <p class="font-semibold text-text">{site.name}</p>
+          <p class="text-muted">{site.role} · {site.city}</p>
+        </div>
+      </div>
       <h1 class="mt-4 max-w-4xl text-[clamp(2.1rem,3.7vw,3.1rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-balance">
         Проектирую сложные B2B-системы — и собираю прототипы в AI-агентах
       </h1>
@@ -66,15 +79,7 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
         Работает ввод данных, нет сломанных связок, как в Figma-прототипах. Первая итерация для команды — за день вместо 1–2 недель.
       </p>
       </div>
-      <figure class="relative mx-auto w-full max-w-[520px]">
-        <img
-          src={withBase('/images/home/portrait.webp')}
-          alt="Евгений Горлинский — иллюстрированный портрет"
-          width="1254"
-          height="1254"
-          class="aspect-square w-full rounded-[28px] border border-line object-cover shadow-[0_30px_80px_-40px_rgb(20_20_40/0.45)]"
-        />
-      </figure>
+      <HeroDemo client:visible />
     </section>
 
     <!-- Кейсы -->
@@ -82,7 +87,7 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
       <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <h2 class="text-3xl font-semibold tracking-tight">Избранные проекты</h2>
         <p class="max-w-md text-[15px] text-muted">
-          Фича с измеренным эффектом, процесс с исследованиями, сервис для двух ролей, системная платформа и исследование, которое поменяло задачу.
+          Сервис для двух ролей, процесс с исследованиями, системная платформа, исследование, которое поменяло задачу, и фича с измеренным эффектом.
         </p>
       </div>
       {
