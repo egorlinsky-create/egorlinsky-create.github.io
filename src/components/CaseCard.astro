@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import fs from 'node:fs';
 import path from 'node:path';
 import StatusChip from './StatusChip.astro';
+import CaseCover from './CaseCover';
 import { withBase } from '@/lib/utils';
 
 interface Props {
@@ -43,10 +44,7 @@ const toneVars = `--tone: var(--c-${accent}); --tone-soft: var(--c-${accent}-sof
           class="size-full object-cover transition-transform duration-300 ease-[var(--ease-out)] group-hover:scale-[1.02]"
         />
       ) : (
-        <div class="case-metric" aria-hidden="true">
-          <strong>{metric ?? company}</strong>
-          {metricLabel && <span>{metricLabel}</span>}
-        </div>
+        <CaseCover slug={entry.id} metric={metric} metricLabel={metricLabel} />
       )
     }
   </div>
