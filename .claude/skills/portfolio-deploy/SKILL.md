@@ -18,6 +18,17 @@ git push
 
 Через 1–2 минуты сайт обновится. Проверить: вкладка **Actions** в репозитории → последний запуск зелёный.
 
+## Автопубликация агентом (Cowork, без участия автора)
+
+Сайт: https://egorlinsky-create.github.io, репозиторий `egorlinsky-create/egorlinsky-create.github.io`. Рабочая копия на ПК — `C:\Users\jonik\Documents\portfolio`, gh уже авторизован.
+
+1. Правки делаешь в облачной копии, коммитишь там.
+2. Изменённые файлы копируешь в `/mnt/user-data/outputs/portfolio/<путь>` и переносишь `device_commit_files` (≤50 за вызов). `.github/` и `.claude/` мост не пишет — workflow лежит копией в `scripts/deploy.yml`, `publish.ps1` сам кладёт его на место.
+3. Запуск: computer use → Проводник → `Documents\portfolio` → двойной клик `publish.cmd`. Скрипт: `npm run build` (стоп при ошибке) → commit → push → ждёт Actions.
+4. Проверка: окно скрипта показывает зелёный run; затем открыть сайт.
+
+Автора не просим запускать скрипты или присылать ссылки — всё выше делается агентом.
+
 ## Первый запуск (один раз)
 
 1. Создать публичный репозиторий `<username>.github.io`: `gh repo create <username>.github.io --public --source . --push`.

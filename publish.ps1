@@ -27,6 +27,7 @@ try {
 
   Step "Проверяю сборку сайта"
   if (-not (Test-Path 'node_modules')) { npm install --no-audit --no-fund | Out-Host }
+  npm run skills:sync | Out-Host
   npm run build | Out-Host
   if ($LASTEXITCODE -ne 0) { Fail "Сайт не собирается. Скопируйте первую ошибку выше и пришлите Claude — публикацию остановил, чтобы не выложить сломанную версию." }
 
@@ -38,7 +39,9 @@ try {
   if (-not (Test-Path '.git')) { git init -b main | Out-Null }
   git add -A
   git diff --cached --quiet
-  if ($LASTEXITCODE -ne 0) { git commit -m "Портфолио: обновление" | Out-Host }
+  if ($LASTEXITCODE -ne 0) { $msg = 'Портфолио: обновление'
+    if (Test-Path 'scripts\commit-msg.txt') { $msg = (Get-Content 'scripts\commit-msg.txt' -Raw -Encoding UTF8).Trim() }
+    git commit -m $msg | Out-Host }
 
   $repo = "$u.github.io"
   Step "4/6 Репозиторий $repo"
