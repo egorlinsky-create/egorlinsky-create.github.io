@@ -1,8 +1,16 @@
 ---
-import fs from 'node:fs';
 import path from 'node:path';
+import fs from 'node:fs';
 import { withBase } from '@/lib/utils';
+import { imageSize } from '@/lib/image-size';
 
+/**
+ * Картинка кейса. Знает свой размер и подбирает подачу сама:
+ * - не растягивает картинку шире исходника (мелкие кропы не пикселят);
+ * - экран телефона — на подложке, не шире 300 px;
+ * - высокая картинка — обрезана по высоте, целиком открывается по клику;
+ * - плотная схема или отчёт — открывается крупно по клику (лайтбокс с прокруткой).
+ */
 interface Props {
   src: string;
   alt?: string;
@@ -10,29 +18,36 @@ interface Props {
   caption?: string;
   /** wide — шире колонки текста на десктопе */
   wide?: boolean;
+  /** Переопределить подачу: auto (по умолчанию), phone, small, full */
+  fit?: 'auto' | 'phone' | 'small' | 'full';
+  /** Открывать крупно по клику; по умолчанию — для широких, высоких и плотных картинок */
+  zoom?: boolean;
 }
 
-const { src, alt, caption, wide = false } = Astro.props;
+const { src, alt, caption, wide = false, fit = 'auto', zoom } = Astro.props;
 const isRemote = /^https?:\/\//.test(src);
-const exists = isRemote || fs.existsSync(path.join(process.cwd(), 'public', src));
+const file = path.join(process.cwd(), 'public', src);
+const exists = isRemote || fs.existsSync(file);
+const size = exists && !isRemote ? imageSize(file) : null;
 const fileName = src.split('/').pop();
+
+const w = size?.width ?? 0;
+const h = size?.height ?? 0;
+const ratio = w ? h / w : 0;
+const kind =
+  fit !== 'auto' ? fit : !size ? 'full' : ratio > 1.6 && w <= 500 ? 'phone' : w < 640 ? 'small' : 'full';
+const tall = kind === 'full' && ratio > 1.4;
+const canZoom = zoom ?? (kind === 'full' && (w >= 1400 || tall));
 
 const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const captionHtml = caption ? escape(caption).replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-text">$1</strong>') : '';
 const altText = alt ?? (caption ? caption.replace(/\*\*/g, '') : '');
+const url = withBase(src);
 ---
 
-<figure class:list={['reveal not-prose', wide && 'lg:-mx-10']}>
+<figure class:list={['fig reveal not-prose', wide && 'lg:-mx-10']}>
   {
-    exists ? (
-      <img
-        src={withBase(src)}
-        alt={altText}
-        loading="lazy"
-        decoding="async"
-        class="w-full rounded-2xl border border-line bg-surface-2"
-      />
-    ) : (
+    !exists ? (
       <div
         class="flex aspect-[16/9] w-full flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-line bg-surface-2 p-6 text-center"
         role="img"
@@ -41,8 +56,64 @@ const altText = alt ?? (caption ? caption.replace(/\*\*/g, '') : '');
         <span class="text-sm font-medium text-muted">Изображение ещё не загружено</span>
         <code class="font-mono text-xs text-muted">public{src}</code>
       </div>
+    ) : kind === 'phone' || kind === 'small' ? (
+      <div class="fig-stage">
+        <img
+          src={url}
+          alt={altText}
+          width={w || undefined}
+          height={h || undefined}
+          loading="lazy"
+          decoding="async"
+          class:list={['fig-img', kind === 'phone' ? 'fig-phone' : 'fig-small']}
+          style={w ? `max-width: min(100%, ${kind === 'phone' ? Math.min(w, 300) : w}px)` : undefined}
+        />
+      </div>
+    ) : canZoom ? (
+      <button type="button" class:list={['fig-zoom', tall && 'fig-tall']} data-zoom={url} data-zoom-alt={altText} aria-label={`Открыть крупно: ${altText}`}>
+        <img src={url} alt={altText} width={w || undefined} height={h || undefined} loading="lazy" decoding="async" class="fig-img" />
+        <span class="fig-zoom-hint" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v4M6 14H2v-4M14 2 9 7M2 14l5-5" /></svg>
+          {tall ? 'Открыть целиком' : 'Крупнее'}
+        </span>
+      </button>
+    ) : (
+      <img src={url} alt={altText} width={w || undefined} height={h || undefined} loading="lazy" decoding="async" class="fig-img" />
     )
   }
   {captionHtml && <figcaption class="mt-3 text-[14px] leading-snug text-muted" set:html={captionHtml} />}
   {!exists && <span class="sr-only">Файл {fileName} ожидается в папке public.</span>}
 </figure>
+
+<script>
+  // Лайтбокс: один <dialog> на страницу, делегирование кликов — работает и после переходов ClientRouter
+  function ensureDialog(): HTMLDialogElement {
+    let d = document.getElementById('fig-lightbox') as HTMLDialogElement | null;
+    if (d) return d;
+    d = document.createElement('dialog');
+    d.id = 'fig-lightbox';
+    d.className = 'fig-lightbox';
+    d.setAttribute('aria-label', 'Изображение крупно');
+    d.innerHTML =
+      '<div class="fig-lightbox-bar"><span class="fig-lightbox-title"></span><button type="button" class="fig-lightbox-close">Закрыть <kbd>Esc</kbd></button></div><div class="fig-lightbox-body"><img alt="" /></div>';
+    d.querySelector('.fig-lightbox-close')!.addEventListener('click', () => d!.close());
+    d.addEventListener('click', (e) => {
+      if (e.target === d || (e.target as HTMLElement).classList.contains('fig-lightbox-body')) d!.close();
+    });
+    d.addEventListener('close', () => document.documentElement.classList.remove('fig-lightbox-open'));
+    document.body.appendChild(d);
+    return d;
+  }
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-zoom]');
+    if (!btn) return;
+    const d = ensureDialog();
+    const img = d.querySelector('img')!;
+    img.src = btn.dataset.zoom!;
+    img.alt = btn.dataset.zoomAlt ?? '';
+    d.querySelector('.fig-lightbox-title')!.textContent = btn.dataset.zoomAlt ?? '';
+    document.documentElement.classList.add('fig-lightbox-open');
+    d.showModal();
+    d.querySelector<HTMLElement>('.fig-lightbox-body')!.scrollTo(0, 0);
+  });
+</script>
