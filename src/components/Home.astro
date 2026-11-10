@@ -23,6 +23,62 @@ const craftAll = [
 const hasFile = (src: string) => fs.existsSync(path.join(process.cwd(), 'public', src));
 const craft = craftAll.filter((c) => hasFile(c.src));
 const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
+
+// Навыки — только то, что подтверждено кейсами на сайте
+const axes = ['А', 'Б', 'В', 'Г'];
+const skills = [
+  {
+    title: 'Продуктовое проектирование',
+    items: [
+      'JTBD, сценарии и <strong class="font-medium text-text">статусные модели</strong>: у состояния есть причина, ответственный и условие перехода',
+      'Карты процесса (XMP) для нескольких ролей: водитель, менеджер, система',
+      'Плотные B2B-интерфейсы: реестры, фильтры, карточки, режимы работы',
+      'Все состояния и микротексты: пусто, загрузка, ошибка, edge cases',
+    ],
+    proof: [
+      { slug: 'taxi-epl', label: 'ЭПЛ' },
+      { slug: 'selection', label: 'Подборка ФД' },
+    ],
+  },
+  {
+    title: 'Исследования',
+    items: [
+      'Модерируемые юзабилити-тесты: <strong class="font-medium text-text">~20 сессий</strong> по встречам и задачам, около 10 — по обращениям',
+      'Гипотезы «если… то… потому что…» под каждое задание',
+      'Отчёты, где путь от эпизода сессии до решения прослеживается по таймкоду',
+      'Интервью после тестов, с менеджерами и стейкхолдерами',
+    ],
+    proof: [
+      { slug: 'erp-meetings', label: 'Встречи и задачи' },
+      { slug: 'research-appeals', label: 'Входящие обращения' },
+    ],
+  },
+  {
+    title: 'Дизайн-системы',
+    items: [
+      'Токены в три уровня: примитивы → семантика → компоненты; темы в одном слое',
+      'Компоненты по atomic design: состояние живёт в базовой части, подписи переиспользуются',
+      'Доступность: контраст статусов по замерам, AAA для чипсов',
+      'Контракт Figma ↔ React и Storybook. <strong class="font-medium text-text">87%</strong> экземпляров в макетах ERP — из библиотеки',
+    ],
+    proof: [{ slug: 'noboring-ds', label: 'Noboring Design System' }],
+  },
+  {
+    title: 'Прототипы в коде и AI-агентах',
+    items: [
+      'Прототипы уровня прода в Claude Code и Codex на компонентах дизайн-системы',
+      'Первая итерация для обсуждения — <strong class="font-medium text-text">за день</strong> вместо 1–2 недель',
+      'Работающий ввод данных на тестах вместо кликов по заготовленным переходам',
+      'Инструкции для агента в дизайн-системе: правила, компоненты, процессы',
+    ],
+    proof: [
+      { slug: 'erp-meetings', label: 'прототип встреч' },
+      { slug: 'selection', label: 'прототип подборки' },
+    ],
+  },
+];
+const tools = ['Figma: variables, плагины, API', 'FigJam', 'Storybook', 'Claude Code', 'Codex', 'React + Tailwind', 'Notion'];
+
 ---
 
 <div class="mx-auto w-full max-w-6xl px-4 sm:px-8" transition:animate="none">
@@ -30,7 +86,8 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
     <a href={import.meta.env.BASE_URL} class="font-semibold tracking-tight">{site.name}</a>
     <nav class="flex items-center gap-5 text-sm text-muted">
       <a href="#cases" class="hidden hover:text-text sm:inline">Кейсы</a>
-      <a href="#process" class="hidden hover:text-text sm:inline">Как работаю</a>
+      <a href="#skills" class="hidden hover:text-text sm:inline">Навыки</a>
+      <a href="#process" class="hidden hover:text-text lg:inline">Как работаю</a>
       <a href={site.telegram} class="rounded-full bg-text px-4 py-2 font-medium whitespace-nowrap text-bg hover:opacity-90" target="_blank" rel="noopener">
         <span class="sm:hidden">Telegram</span><span class="hidden sm:inline">Написать в Telegram</span>
       </a>
@@ -51,8 +108,10 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
           class="size-14 rounded-full border border-line object-cover"
         />
         <div class="text-sm leading-snug">
-          <p class="font-semibold text-text">{site.name}</p>
-          <p class="text-muted">{site.role} · {site.city}</p>
+          <p class="font-semibold text-text">{site.role} · B2B и сложные системы</p>
+          <p class="flex items-center gap-1.5 text-muted">
+            <span class="size-1.5 rounded-full bg-st-green" aria-hidden="true"></span>{site.city} · открыт к предложениям
+          </p>
         </div>
       </div>
       <h1 class="mt-4 max-w-4xl text-[clamp(2.1rem,3.7vw,3.1rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-balance">
@@ -105,6 +164,50 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
           </div>
         )
       }
+    </section>
+
+
+    <!-- Что умею -->
+    <section id="skills" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h2 class="text-3xl font-semibold tracking-tight">Что умею</h2>
+        <p class="max-w-md text-[15px] text-muted">У каждого навыка — кейс, где его видно в работе.</p>
+      </div>
+      <ol class="mt-10 grid gap-4 sm:grid-cols-2">
+        {skills.map((g, i) => (
+          <li class="flex flex-col rounded-[var(--radius-card)] border border-line bg-surface p-6">
+            <div class="flex items-center gap-3">
+              <span class="grid size-8 shrink-0 place-items-center rounded-full border border-line font-mono text-[13px] text-muted" aria-hidden="true">
+                {axes[i]}
+              </span>
+              <h3 class="text-lg font-semibold">{g.title}</h3>
+            </div>
+            <ul class="mt-4 grid gap-2 text-[15px] text-muted">
+              {g.items.map((it) => (
+                <li class="flex gap-2">
+                  <span class="mt-[0.6em] h-px w-3 shrink-0 bg-line" aria-hidden="true"></span>
+                  <span set:html={it} />
+                </li>
+              ))}
+            </ul>
+            <p class="mt-auto pt-5 text-sm text-muted">
+              Где видно:{' '}
+              {g.proof.map((c, j) => (
+                <>
+                  {j > 0 && ', '}
+                  <a class="link" href={withBase(`/cases/${c.slug}`)}>{c.label}</a>
+                </>
+              ))}
+            </p>
+          </li>
+        ))}
+      </ol>
+      <div class="mt-8 flex flex-wrap items-center gap-2 text-sm">
+        <span class="mr-1 text-muted">Инструменты:</span>
+        {tools.map((t) => (
+          <span class="rounded-full border border-line bg-surface px-3 py-1">{t}</span>
+        ))}
+      </div>
     </section>
 
     <!-- Интерфейс крупно -->
