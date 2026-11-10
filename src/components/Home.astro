@@ -192,12 +192,7 @@ const tools = ['Figma: variables, плагины, API', 'FigJam', 'Storybook', '
             </ul>
             <p class="mt-auto pt-5 text-sm text-muted">
               Где видно:{' '}
-              {g.proof.map((c, j) => (
-                <>
-                  {j > 0 && ', '}
-                  <a class="link" href={withBase(`/cases/${c.slug}`)}>{c.label}</a>
-                </>
-              ))}
+              {g.proof.map((c, j) => <span>{j > 0 && ', '}<a class="link" href={withBase(`/cases/${c.slug}`)}>{c.label}</a></span>)}
             </p>
           </li>
         ))}

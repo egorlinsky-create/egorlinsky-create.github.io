@@ -24,7 +24,7 @@ git push
 
 1. Правки делаешь в облачной копии, коммитишь там.
 2. Изменённые файлы копируешь в `/mnt/user-data/outputs/portfolio/<путь>` и переносишь `device_commit_files` (≤50 за вызов). `.github/` и `.claude/` мост не пишет — workflow лежит копией в `scripts/deploy.yml`, `publish.ps1` сам кладёт его на место.
-3. Запуск: computer use → Проводник → `Documents\portfolio` → двойной клик `publish.cmd`. Скрипт: `npm run build` (стоп при ошибке) → commit → push → ждёт Actions.
+3. Запуск: computer use → Проводник → `Documents\portfolio` → двойной клик `publish.cmd`. Рядом лежит `publish.ps1` — перед кликом сделай zoom на строку: нужен «publish», 1 КБ (cmd), а не 5 КБ (ps1). Доступ к Проводнику истекает через 30 минут простоя — запроси заново. Скрипт: `npm run build` (стоп при ошибке) → commit → push → ждёт Actions.
 4. Проверка: окно скрипта показывает зелёный run; затем открыть сайт.
 
 Автора не просим запускать скрипты или присылать ссылки — всё выше делается агентом.
