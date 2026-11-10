@@ -18,6 +18,8 @@ import Figures from '@/components/case/Figures.astro';
 import Callout from '@/components/case/Callout.astro';
 import Meta from '@/components/case/Meta.astro';
 import Outcome from '@/components/case/Outcome.astro';
+import Prototype from '@/components/case/Prototype.astro';
+import MeetingsPrototype from '@/prototypes/MeetingsPrototype';
 
 <Figure src="/images/erp-meetings/cover.webp" alt="Встреча в ERP и кабинет клиента: реальные макеты в мокапе" />
 
@@ -153,6 +155,12 @@ import Outcome from '@/components/case/Outcome.astro';
 </Figures>
 
 <p class="text-[15px] text-muted">Статус: доработки спроектированы и идут в работу по задачам.</p>
+
+<Prototype title="План встреч и задач — попробуй сам" note="Десктоп — по макетам; мобильная версия — проработка для портфолио по паттернам мобильного кабинета. Данные демонстрационные">
+  <MeetingsPrototype client:visible />
+</Prototype>
+
+<p class="text-[15px] text-muted">Что проверить: найди задачи на ближайшие 7 дней через фильтры, открой встречу и поменяй порядок пунктов чек-листа перетаскиванием или стрелками, загрузи два файла — второй покажет ошибку загрузки. Переключи на мобильную версию: карточка открывается на весь экран, комментарии — на отдельной вкладке, фильтры — нижним листом.</p>
 
 ## Раздел развивается: общий план в кабинете клиента и метки содержания — в продакшене
 

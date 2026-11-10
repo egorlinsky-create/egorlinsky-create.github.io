@@ -149,6 +149,7 @@
    В слое base, чтобы утилиты Tailwind (text-*, outline-none) могли её перекрыть. */
 @layer base {
 html {
+  overflow-x: clip;
   background: var(--c-bg);
   color: var(--c-text);
   -webkit-font-smoothing: antialiased;
@@ -675,5 +676,26 @@ html.panel-open {
     .case-card:hover .case-metric strong {
       transform: translateY(-4px);
     }
+  }
+}
+
+/* Фон hero: чертёж (HeroBlueprint.tsx). Полная ширина окна, текст слева остаётся читаемым */
+.hero-blueprint {
+  position: absolute;
+  z-index: -1;
+  top: -88px;
+  left: 50%;
+  width: 100vw;
+  height: calc(100% + 88px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent), linear-gradient(90deg, rgb(0 0 0 / 0.4), #000 48%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, #000 92%, transparent), linear-gradient(90deg, rgb(0 0 0 / 0.4), #000 48%);
+  mask-composite: intersect;
+}
+@media print {
+  .hero-blueprint {
+    display: none;
   }
 }

@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { site } from '@/site';
 import HeroDemo from '@/prototypes/HeroDemo';
+import HeroBlueprint from '@/prototypes/HeroBlueprint';
 import { withBase } from '@/lib/utils';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
@@ -25,7 +26,7 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
 ---
 
 <div class="mx-auto w-full max-w-6xl px-4 sm:px-8" transition:animate="none">
-  <header class="no-print flex items-center justify-between py-6">
+  <header class="no-print relative z-10 flex items-center justify-between py-6">
     <a href={import.meta.env.BASE_URL} class="font-semibold tracking-tight">{site.name}</a>
     <nav class="flex items-center gap-5 text-sm text-muted">
       <a href="#cases" class="hidden hover:text-text sm:inline">Кейсы</a>
@@ -38,7 +39,8 @@ const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
 
   <main id="main">
     <!-- Интро -->
-    <section class="grid items-center gap-12 pt-10 pb-16 sm:pt-16 sm:pb-24 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+    <section class="relative isolate grid items-center gap-12 pt-10 pb-16 sm:pt-16 sm:pb-24 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+      <HeroBlueprint client:idle />
       <div>
       <div class="flex items-center gap-3">
         <img
