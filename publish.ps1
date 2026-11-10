@@ -27,6 +27,7 @@ try {
 
   Step "Проверяю сборку сайта"
   if (-not (Test-Path 'node_modules')) { npm install --no-audit --no-fund | Out-Host }
+  node scripts/install-skills.mjs --missing | Out-Host  # новые внешние навыки из skills.config.json; ошибка сети не останавливает публикацию
   npm run skills:sync | Out-Host
   npm run build | Out-Host
   if ($LASTEXITCODE -ne 0) { Fail "Сайт не собирается. Скопируйте первую ошибку выше и пришлите Claude — публикацию остановил, чтобы не выложить сломанную версию." }

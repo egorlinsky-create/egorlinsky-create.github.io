@@ -115,6 +115,12 @@
       "skillPath": "skills/magic-ui/SKILL.md",
       "computedHash": "6ff45330fc3b3c0901cc3d9d6febacef519dc477d36c1aaabe73e4879c4833c9"
     },
+    "migrate-radix-to-base": {
+      "source": "shadcn/ui",
+      "sourceType": "github",
+      "skillPath": "skills/migrate-radix-to-base/SKILL.md",
+      "computedHash": "4fdc31bf287f674ba6bf91a648120f7b34cd7ef370f998f2cc116fed067789c5"
+    },
     "mobile-native": {
       "source": "emilkowalski/skill",
       "sourceType": "github",
@@ -144,6 +150,18 @@
       "sourceType": "github",
       "skillPath": "skills/review-animations/SKILL.md",
       "computedHash": "bb706e42e29a74fe8acf1e3c6ef10f066d2ccc58eb8cff5ab89dd21876231ea3"
+    },
+    "shadcn": {
+      "source": "shadcn/ui",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "7859e9a064940a1a0010c992b63e4633c4f5f39ed367a23c16f24029816b1703"
+    },
+    "unslop": {
+      "source": "heydamir/unslop",
+      "sourceType": "github",
+      "skillPath": "skills/unslop/SKILL.md",
+      "computedHash": "d1d4d2f3ca3f1e394d764462b55bc2dc09814dc87439cc00ee359580f8e2070d"
     },
     "write-swift": {
       "source": "emilkowalski/skill",

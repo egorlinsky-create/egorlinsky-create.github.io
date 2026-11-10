@@ -1,6 +1,9 @@
 {
-  "$comment": "Внешние навыки ставятся командой npm run skills:install. Свои навыки проекта лежат в .agents/skills.",
-  "agents": ["claude-code", "codex"],
+  "$comment": "Внешние навыки ставятся командой npm run skills:install (publish.cmd ставит недостающие сам). global: true — ещё и в пользовательские папки Claude Code и Codex, чтобы навык работал во всех проектах.",
+  "agents": [
+    "claude-code",
+    "codex"
+  ],
   "external": [
     {
       "name": "shadcn",
@@ -21,6 +24,12 @@
       "name": "gsap",
       "source": "https://github.com/greensock/gsap-skills",
       "why": "GSAP: ScrollTrigger, timeline, useGSAP — scroll-сторителлинг в кейсах"
+    },
+    {
+      "name": "unslop",
+      "source": "heydamir/unslop",
+      "global": true,
+      "why": "Аудит интерфейса на шаблонный «AI-слоп»: сначала разбор и направление, потом правки. Применять ко всем визуальным изменениям"
     }
   ]
 }
