@@ -1,0 +1,165 @@
+---
+/**
+ * «Режим чертежа»: сайт показывает собственную разметку — сетку, рамку элемента под курсором,
+ * внутренние отступы и токены, из которых он собран. Как Inspect в Figma, в стиле чертежа.
+ * Кнопка — в шапке; выключение — та же кнопка или Esc. На тач-устройствах кнопка скрыта.
+ */
+---
+
+<button type="button" class="bp-toggle" data-inspect-toggle aria-pressed="false" title="Показать разметку сайта: отступы, размеры, токены">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+    <path d="M2 2h12v12H2zM2 6h12M6 6v8" />
+  </svg>
+  <span>Чертёж</span>
+</button>
+
+<script>
+  // Токены сайта, которые ищем в вычисленных стилях элемента
+  const COLOR_TOKENS = [
+    '--c-accent', '--c-on-accent', '--c-accent-soft', '--c-text', '--c-muted', '--c-line',
+    '--c-bg', '--c-surface', '--c-surface-2', '--c-green', '--c-green-soft', '--c-blue', '--c-blue-soft',
+    '--c-purple', '--c-purple-soft', '--c-gray', '--c-gray-soft', '--c-amber', '--c-amber-soft', '--c-red',
+  ];
+  let colorMap = new Map<string, string>();
+  let radiusCard = '';
+  let root: HTMLDivElement | null = null;
+  let box: HTMLDivElement, pads: HTMLDivElement[], label: HTMLDivElement;
+  let raf = 0;
+  let last: Element | null = null;
+
+  let active = false;
+  const isOn = () => active;
+
+  function buildMaps() {
+    const probe = document.createElement('span');
+    probe.style.display = 'none';
+    document.body.appendChild(probe);
+    colorMap = new Map();
+    for (const t of COLOR_TOKENS) {
+      probe.style.color = `var(${t})`;
+      const c = getComputedStyle(probe).color;
+      if (!colorMap.has(c)) colorMap.set(c, t);
+    }
+    probe.remove();
+    radiusCard = getComputedStyle(document.documentElement).getPropertyValue('--radius-card').trim();
+  }
+
+  function ensureRoot() {
+    if (root && document.body.contains(root)) return;
+    root = document.createElement('div');
+    root.className = 'bp-layer';
+    root.setAttribute('aria-hidden', 'true');
+    root.innerHTML =
+      '<div class="bp-grid"></div><div class="bp-box"></div><div class="bp-pad"></div><div class="bp-pad"></div><div class="bp-pad"></div><div class="bp-pad"></div><div class="bp-label"></div><div class="bp-legend">Режим чертежа · наведите на элемент · <kbd>Esc</kbd> — выйти</div>';
+    document.body.appendChild(root);
+    box = root.querySelector('.bp-box')!;
+    pads = [...root.querySelectorAll<HTMLDivElement>('.bp-pad')];
+    label = root.querySelector('.bp-label')!;
+  }
+
+  const px = (v: string) => Math.round(parseFloat(v) || 0);
+  const tokenOf = (c: string) => colorMap.get(c);
+  const transparent = (c: string) => c === 'rgba(0, 0, 0, 0)' || c === 'transparent';
+
+  function describe(el: Element, cs: CSSStyleDeclaration, r: DOMRect) {
+    const rows: [string, string][] = [];
+    const tag = el.tagName.toLowerCase();
+    rows.push([tag, `${Math.round(r.width)} × ${Math.round(r.height)}`]);
+    const bg = cs.backgroundColor;
+    if (!transparent(bg)) rows.push(['фон', tokenOf(bg) ?? bg]);
+    if (el.childNodes.length && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim())) {
+      rows.push(['текст', `${tokenOf(cs.color) ?? cs.color}`]);
+      const fam = cs.fontFamily.split(',')[0].replace(/["']/g, '');
+      rows.push(['шрифт', `${fam} ${px(cs.fontSize)}/${px(cs.lineHeight) || '—'} · ${cs.fontWeight}`]);
+    }
+    if (px(cs.borderTopWidth) > 0 && !transparent(cs.borderTopColor)) rows.push(['обводка', `${px(cs.borderTopWidth)} · ${tokenOf(cs.borderTopColor) ?? cs.borderTopColor}`]);
+    const rad = cs.borderTopLeftRadius;
+    if (px(rad) > 0) rows.push(['радиус', rad === radiusCard ? `--radius-card (${px(rad)})` : `${px(rad)}`]);
+    const p = [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].map(px);
+    if (p.some(Boolean)) rows.push(['отступы', p.join(' ')]);
+    const gap = px(cs.rowGap || cs.gap);
+    if ((cs.display.includes('flex') || cs.display.includes('grid')) && gap) rows.push(['gap', String(gap)]);
+    return rows;
+  }
+
+  function draw(x: number, y: number) {
+    ensureRoot();
+    root!.style.display = 'none'; // не ловим собственный слой
+    const el = document.elementFromPoint(x, y);
+    root!.style.display = '';
+    if (!el || el === document.documentElement || el === document.body) {
+      box.style.opacity = '0';
+      label.style.opacity = '0';
+      pads.forEach((p) => (p.style.opacity = '0'));
+      return;
+    }
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    Object.assign(box.style, { opacity: '1', left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+    // Внутренние отступы — штриховкой
+    const [pt, pr, pb, pl] = [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].map(px);
+    const rects = [
+      [r.left, r.top, r.width, pt],
+      [r.right - pr, r.top, pr, r.height],
+      [r.left, r.bottom - pb, r.width, pb],
+      [r.left, r.top, pl, r.height],
+    ];
+    pads.forEach((p, i) => {
+      const [l, t, w, h] = rects[i];
+      Object.assign(p.style, { opacity: w > 0 && h > 0 ? '1' : '0', left: `${l}px`, top: `${t}px`, width: `${w}px`, height: `${h}px` });
+    });
+    if (el !== last) {
+      last = el;
+      label.innerHTML = describe(el, cs, r)
+        .map(([k, v]) => `<span class="bp-k">${k}</span><span class="bp-v">${v}</span>`)
+        .join('');
+    }
+    // Подпись — у курсора, не вылезая за экран
+    const lw = label.offsetWidth;
+    const lh = label.offsetHeight;
+    const lx = Math.min(window.innerWidth - lw - 12, x + 16);
+    const ly = y + 20 + lh > window.innerHeight ? y - lh - 12 : y + 20;
+    Object.assign(label.style, { opacity: '1', left: `${Math.max(12, lx)}px`, top: `${Math.max(12, ly)}px` });
+  }
+
+  function onMove(e: PointerEvent) {
+    if (!isOn() || e.pointerType !== 'mouse') return;
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => draw(e.clientX, e.clientY));
+  }
+
+  function set(on: boolean) {
+    const html = document.documentElement;
+    active = on;
+    if (on) {
+      buildMaps();
+      ensureRoot();
+      html.dataset.inspect = 'on';
+    } else {
+      delete html.dataset.inspect;
+      last = null;
+    }
+    document.querySelectorAll('[data-inspect-toggle]').forEach((b) => b.setAttribute('aria-pressed', String(on)));
+  }
+
+  document.addEventListener('click', (e) => {
+    const t = (e.target as HTMLElement).closest('[data-inspect-toggle]');
+    if (t) set(!isOn());
+  });
+  document.addEventListener('inspect:toggle', () => set(!isOn()));
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      if (e.key === 'Escape' && isOn()) {
+        e.stopImmediatePropagation(); // Esc сначала выключает чертёж, а не закрывает кейс
+        set(false);
+      }
+    },
+    { capture: true },
+  );
+  document.addEventListener('pointermove', onMove, { passive: true });
+  document.addEventListener('astro:after-swap', () => {
+    root = null;
+    if (isOn()) set(true);
+  });
+</script>

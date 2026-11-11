@@ -14,6 +14,8 @@ cover: "/images/noboring-ds/cover.webp"
 ---
 
 import Figure from '@/components/case/Figure.astro';
+import Prototype from '@/components/case/Prototype.astro';
+import TokenChain from '@/prototypes/TokenChain';
 import Figures from '@/components/case/Figures.astro';
 import Callout from '@/components/case/Callout.astro';
 import Meta from '@/components/case/Meta.astro';
@@ -63,6 +65,10 @@ import Outcome from '@/components/case/Outcome.astro';
 - `Button/Color/Bg/primary/default` → `Colors/bg/action/default` → Light: `Primary/500` (#1D23CD) · Dark: `Primary/400` (#4B50D8)
 - `Button/Color/Bg/secondary/default` → `Colors/bg/secondary/default` → Light: `Primary/50` (#E7E8F9) · Dark: `Primary/900` (#060728)
 - `Button/Color/Text/primary/default` → `Colors/text/primary/-on-action-primary` → `Basic/-white` в обеих темах
+
+<Prototype title="Переключите тему — поменяется только последнее звено" note="Цепочки и значения — из alias-привязок библиотеки">
+  <TokenChain client:visible />
+</Prototype>
 
 **Решение: режимы темы есть только в семантике.** Компонентные токены имеют один режим и ссылаются на роли. Поэтому кнопка не знает о теме: смена Light/Dark переназначает роль на другой примитив, а компонент, его варианты и состояния не меняются. Вторичный фон в тёмной теме — не «чуть темнее», а другой конец шкалы (50 → 900): роль сохраняет контраст с текстом, а не оттенок.
 

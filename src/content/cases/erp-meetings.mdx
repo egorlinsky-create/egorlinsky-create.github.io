@@ -15,6 +15,7 @@ cover: "/images/erp-meetings/cover.webp"
 
 import Figure from '@/components/case/Figure.astro';
 import Figures from '@/components/case/Figures.astro';
+import Compare from '@/components/case/Compare.astro';
 import Callout from '@/components/case/Callout.astro';
 import Meta from '@/components/case/Meta.astro';
 import Outcome from '@/components/case/Outcome.astro';
@@ -66,7 +67,6 @@ import MeetingsPrototype from '@/prototypes/MeetingsPrototype';
 
 <Figure src="/images/erp-meetings/research-time-screen.webp" caption="**Экран теста:** внесение трудозатрат в интерактивном прототипе" />
 
-<Figure src="/images/erp-meetings/test3-registry.webp" caption="**Прототип третьей итерации:** план встреч и задач со статусами, чек-листом и комментариями на карточке. Данные демонстрационные" />
 
 <Figure src="/images/erp-meetings/research-hypotheses.webp" caption="**Гипотезы для проверки** по реестру задач" />
 
@@ -98,10 +98,11 @@ import MeetingsPrototype from '@/prototypes/MeetingsPrototype';
 
 **Цена:** создание отдельной задачи из пункта чек-листа не вошло в эту версию и осталось в бэклоге.
 
-<Figures>
-  <Figure src="/images/erp-meetings/nf-meeting-before.webp" caption="**Было:** форма по внутренней методике — ожидания, план, результат, следующие шаги" />
-  <Figure src="/images/erp-meetings/nf-meeting-after.webp" caption="**Стало:** чек-лист вместо четырёх полей" />
-</Figures>
+<Compare
+  before="/images/erp-meetings/nf-meeting-before.webp"
+  after="/images/erp-meetings/nf-meeting-after.webp"
+  caption="**Было → стало:** четыре поля по внутренней методике (ожидания, план, результат, следующие шаги) заменил чек-лист. Потяните разделитель"
+/>
 
 <Callout label="Правка UI по итогам теста — из отчёта">
   - «Ожидания» — удаляем
@@ -149,15 +150,20 @@ import MeetingsPrototype from '@/prototypes/MeetingsPrototype';
 | Поиск и фильтры | Поиск по названию, применённые условия плашками, «Найдено N», «Сбросить», пустые результаты |
 | Чек-лист и участники в задачах | Перетаскивание пунктов, участники в задаче, как во встрече |
 
-<Figures>
-  <Figure src="/images/erp-meetings/fb-deadlines-registry.webp" caption="**Подсветка сроков:** до срока 0 и 1 день — плашка прямо в строке. Данные демонстрационные" />
-  <Figure src="/images/erp-meetings/fb-filters-applied.webp" caption="**Фильтры применены:** условия плашками под поиском, «Найдено 2», «Сбросить»" />
-</Figures>
+<Compare
+  before="/images/erp-meetings/test3-registry.webp"
+  after="/images/erp-meetings/fb-filters-applied.webp"
+  beforeLabel="Тест 3"
+  afterLabel="После ОС"
+  caption="**План встреч и задач: третий тест → доработки по обратной связи.** Появились поиск, применённые фильтры плашками, «Найдено N» и сводка по статусам. Данные демонстрационные"
+/>
 
 <Figures>
+  <Figure src="/images/erp-meetings/fb-deadlines-registry.webp" caption="**Подсветка сроков:** до срока 0 и 1 день — плашка прямо в строке. Данные демонстрационные" />
   <Figure src="/images/erp-meetings/fb-task-documents.webp" caption="**Документы в задаче** и чек-лист с перетаскиванием пунктов" />
-  <Figure src="/images/erp-meetings/fb-reminders-defaults.webp" caption="**Напоминания по умолчанию:** применяются к новым встречам, созданные не меняются" />
 </Figures>
+
+<Figure src="/images/erp-meetings/fb-reminders-defaults.webp" caption="**Напоминания по умолчанию:** применяются к новым встречам, созданные не меняются" />
 
 <p class="text-[15px] text-muted">Статус: доработки спроектированы и идут в работу по задачам.</p>
 

@@ -7,6 +7,8 @@ import path from 'node:path';
 import { site } from '@/site';
 import HeroDemo from '@/prototypes/HeroDemo';
 import HeroBlueprint from '@/prototypes/HeroBlueprint';
+import Inspect from './Inspect.astro';
+import CommandMenu from './CommandMenu.astro';
 import { withBase } from '@/lib/utils';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
@@ -121,7 +123,8 @@ const tools = ['Figma: variables, плагины, API', 'FigJam', 'Storybook', '
     <nav class="flex items-center gap-5 text-sm text-muted">
       <a href="#cases" class="hidden hover:text-text sm:inline">Кейсы</a>
       <a href="#skills" class="hidden hover:text-text sm:inline">Навыки</a>
-      <a href="#process" class="hidden hover:text-text lg:inline">Как работаю</a>
+      <Inspect />
+      <CommandMenu cases={cases.map((c) => ({ id: c.id, title: c.data.cardTitle ?? c.data.title, meta: c.data.company }))} />
       <a href={site.telegram} class="rounded-full bg-text px-4 py-2 font-medium whitespace-nowrap text-bg hover:opacity-90" target="_blank" rel="noopener">
         <span class="sm:hidden">Telegram</span><span class="hidden sm:inline">Написать в Telegram</span>
       </a>

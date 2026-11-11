@@ -18,6 +18,8 @@ import Figures from '@/components/case/Figures.astro';
 import Callout from '@/components/case/Callout.astro';
 import Meta from '@/components/case/Meta.astro';
 import Outcome from '@/components/case/Outcome.astro';
+import Prototype from '@/components/case/Prototype.astro';
+import ObservationBoard from '@/prototypes/ObservationBoard';
 
 <Figure src="/images/research-appeals/cover.webp" alt="Реестр входящих обращений и карточки наблюдений: реальные экраны в мокапе" />
 
@@ -54,6 +56,10 @@ import Outcome from '@/components/case/Outcome.astro';
 ## 6 заданий — 6 гипотез: проверяли весь путь обращения
 
 К каждому заданию я записал гипотезу в формате «если… то… потому что…», чтобы тест отвечал на вопрос команды, а не на «нравится ли экран». Итерация с полным отчётом: 3 участника, 104 карточки — 30 положительных реакций, 9 затруднений, 27 предположений, 11 предложений, 12 записей в бэклог и гипотез, 15 ответов на интервью после теста.
+
+<Prototype title="104 карточки отчёта по типам" note="Количества и примеры — из отчёта. Тексты карточек не публикуются">
+  <ObservationBoard client:visible />
+</Prototype>
 
 | Задание | Гипотеза | Оценка, 1–5 |
 |---|---|---|

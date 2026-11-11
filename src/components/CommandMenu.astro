@@ -1,0 +1,146 @@
+---
+/**
+ * ⌘K / Ctrl+K: быстрый переход к кейсу или разделу и частые действия.
+ * Нативный <dialog>: фокус внутри, Esc закрывает, стрелки и Enter — выбор.
+ */
+import { withBase } from '@/lib/utils';
+import { site } from '@/site';
+
+interface Props {
+  cases: { id: string; title: string; meta: string }[];
+}
+const { cases } = Astro.props;
+
+type Item = { group: string; label: string; hint?: string; href?: string; action?: string; external?: boolean };
+const items: Item[] = [
+  ...cases.map((c) => ({ group: 'Кейсы', label: c.title, hint: c.meta, href: withBase(`/cases/${c.id}`) })),
+  { group: 'Разделы', label: 'Избранные проекты', href: `${withBase('/')}#cases` },
+  { group: 'Разделы', label: 'Принцип работы', href: `${withBase('/')}#principles` },
+  { group: 'Разделы', label: 'Что умею', href: `${withBase('/')}#skills` },
+  { group: 'Разделы', label: 'Как я работаю', href: `${withBase('/')}#process` },
+  { group: 'Действия', label: 'Написать в Telegram', hint: site.telegramHandle, href: site.telegram, external: true },
+  { group: 'Действия', label: 'Открыть LinkedIn', href: site.linkedin, external: true },
+  { group: 'Действия', label: 'Скопировать ссылку на страницу', action: 'copy' },
+  { group: 'Действия', label: 'Режим чертежа: показать разметку сайта', action: 'inspect' },
+];
+const groups = [...new Set(items.map((i) => i.group))];
+---
+
+<button type="button" class="cmdk-trigger" data-cmdk-open aria-label="Быстрый переход, сочетание клавиш Ctrl или Cmd и K">
+  <kbd>⌘</kbd><kbd>K</kbd>
+</button>
+
+<dialog class="cmdk" data-cmdk aria-label="Быстрый переход">
+  <div class="cmdk-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5" /><path d="m11 11 3 3" /></svg>
+    <input type="text" placeholder="Кейс, раздел или действие" aria-label="Поиск" data-cmdk-input autocomplete="off" />
+    <kbd>Esc</kbd>
+  </div>
+  <div class="cmdk-list" role="listbox" data-cmdk-list>
+    {
+      groups.map((g) => (
+        <div class="cmdk-group" data-cmdk-group>
+          <p class="cmdk-group-title">{g}</p>
+          {items
+            .filter((i) => i.group === g)
+            .map((i) => (
+              <a
+                class="cmdk-item"
+                role="option"
+                href={i.href ?? '#'}
+                data-cmdk-item
+                data-action={i.action}
+                data-text={`${i.label} ${i.hint ?? ''}`.toLowerCase()}
+                target={i.external ? '_blank' : undefined}
+                rel={i.external ? 'noopener' : undefined}
+              >
+                <span>{i.label}</span>
+                {i.hint && <span class="cmdk-hint">{i.hint}</span>}
+              </a>
+            ))}
+        </div>
+      ))
+    }
+    <p class="cmdk-empty" data-cmdk-empty hidden>Ничего не нашли. Попробуйте «ЭПЛ», «дизайн-система» или «Telegram»</p>
+  </div>
+  <p class="cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd> выбор</span><span><kbd>Enter</kbd> открыть</span></p>
+</dialog>
+
+<script>
+  let active = 0;
+  const dlg = () => document.querySelector<HTMLDialogElement>('[data-cmdk]');
+  const visibleItems = () => [...(dlg()?.querySelectorAll<HTMLAnchorElement>('[data-cmdk-item]') ?? [])].filter((a) => !a.hidden);
+
+  function highlight(i: number) {
+    const list = visibleItems();
+    if (!list.length) return;
+    active = (i + list.length) % list.length;
+    list.forEach((a, k) => a.setAttribute('aria-selected', String(k === active)));
+    list[active].scrollIntoView({ block: 'nearest' });
+  }
+  function filter(q: string) {
+    const d = dlg()!;
+    const query = q.trim().toLowerCase();
+    d.querySelectorAll<HTMLAnchorElement>('[data-cmdk-item]').forEach((a) => (a.hidden = !!query && !a.dataset.text!.includes(query)));
+    d.querySelectorAll<HTMLElement>('[data-cmdk-group]').forEach((g) => (g.hidden = !g.querySelector('[data-cmdk-item]:not([hidden])')));
+    (d.querySelector('[data-cmdk-empty]') as HTMLElement).hidden = visibleItems().length > 0;
+    highlight(0);
+  }
+  function open() {
+    const d = dlg();
+    if (!d || d.open) return;
+    const input = d.querySelector<HTMLInputElement>('[data-cmdk-input]')!;
+    input.value = '';
+    filter('');
+    d.showModal();
+    input.focus();
+  }
+  async function run(a: HTMLAnchorElement, e?: Event) {
+    const d = dlg()!;
+    const action = a.dataset.action;
+    if (action) {
+      e?.preventDefault();
+      d.close();
+      if (action === 'copy') {
+        try {
+          await navigator.clipboard.writeText(location.href);
+        } catch {}
+      }
+      if (action === 'inspect') document.dispatchEvent(new Event('inspect:toggle'));
+      return;
+    }
+    d.close();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      open();
+      return;
+    }
+    const d = dlg();
+    if (!d?.open) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      highlight(active + (e.key === 'ArrowDown' ? 1 : -1));
+    } else if (e.key === 'Enter') {
+      const a = visibleItems()[active];
+      if (a) {
+        e.preventDefault();
+        if (!a.dataset.action) a.click();
+        else run(a);
+      }
+    }
+  });
+  document.addEventListener('input', (e) => {
+    if ((e.target as HTMLElement).matches('[data-cmdk-input]')) filter((e.target as HTMLInputElement).value);
+  });
+  document.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    if (t.closest('[data-cmdk-open]')) return open();
+    const item = t.closest<HTMLAnchorElement>('[data-cmdk-item]');
+    if (item) return void run(item, e);
+    const d = dlg();
+    if (d?.open && t === d) d.close(); // клик по подложке
+  });
+</script>
