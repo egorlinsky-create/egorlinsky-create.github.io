@@ -1,0 +1,507 @@
+{
+  "date": "2026-11-15",
+  "fileKey": "kL8g8C54aR6cEHkZNcE6v3",
+  "variables": [
+    {
+      "id": "VariableCollectionId:3634:197081",
+      "name": "Components",
+      "count": 874,
+      "modes": [
+        "Default"
+      ]
+    },
+    {
+      "id": "VariableCollectionId:4582:600",
+      "name": "Semantic [Colors]",
+      "count": 96,
+      "modes": [
+        "Light",
+        "Dark"
+      ]
+    },
+    {
+      "id": "VariableCollectionId:4667:189281",
+      "name": ".Primitives",
+      "count": 95,
+      "modes": [
+        "Mode 1"
+      ]
+    },
+    {
+      "id": "VariableCollectionId:7344:240663",
+      "name": "Semantic [Numbers]",
+      "count": 28,
+      "modes": [
+        "Default"
+      ]
+    },
+    {
+      "id": "VariableCollectionId:7518:57516",
+      "name": ".Semantic [Font]",
+      "count": 34,
+      "modes": [
+        "Mode 1"
+      ]
+    },
+    {
+      "id": "VariableCollectionId:9843:29656",
+      "name": ".Responsive",
+      "count": 23,
+      "modes": [
+        "Desktop",
+        "Tablet",
+        "Mobile"
+      ]
+    }
+  ],
+  "styles": {
+    "text": 51,
+    "paint": 13,
+    "effect": 7,
+    "grid": 0
+  },
+  "components": {
+    "scope": "Страницы ❖ КОМПОНЕНТЫ и 💠 ОРГАНИЗМЫ; исключены атомы, иконки, шаблоны, гайды и служебные страницы",
+    "sets": 121,
+    "standalone": 34,
+    "variants": 1035,
+    "families": 155,
+    "definitions": 1069
+  },
+  "pages": [
+    {
+      "page": "📰 Changes Log",
+      "id": "3930:211229",
+      "sets": 0,
+      "standalone": 1,
+      "variants": 0
+    },
+    {
+      "page": "🤝 Getting Starting",
+      "id": "7307:7176",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": "✏️  Typography Styles",
+      "id": "7307:5583",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": "🌈  Colors",
+      "id": "7307:5818",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": "📐  Spacing",
+      "id": "7307:7015",
+      "sets": 0,
+      "standalone": 1,
+      "variants": 0
+    },
+    {
+      "page": "☕  Shadow",
+      "id": "8737:2615",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": " ◆  Description",
+      "id": "9017:253326",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 8
+    },
+    {
+      "page": " ◆  Devider",
+      "id": "4378:150840",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": " ◆  Icons",
+      "id": "7334:51442",
+      "sets": 0,
+      "standalone": 136,
+      "variants": 0
+    },
+    {
+      "page": " ◆  Interactive-Input-Indicator",
+      "id": "9017:252273",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 2
+    },
+    {
+      "page": " ◆  Interactive-Icon",
+      "id": "4357:137307",
+      "sets": 3,
+      "standalone": 0,
+      "variants": 106
+    },
+    {
+      "page": " ◆  Heading",
+      "id": "2521:260541",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 5
+    },
+    {
+      "page": " ◆  Label",
+      "id": "9017:252951",
+      "sets": 1,
+      "standalone": 1,
+      "variants": 2
+    },
+    {
+      "page": " ◆  Native-Elements",
+      "id": "7334:56563",
+      "sets": 0,
+      "standalone": 10,
+      "variants": 0
+    },
+    {
+      "page": " ◆  Placeholder",
+      "id": "9018:224093",
+      "sets": 2,
+      "standalone": 0,
+      "variants": 5
+    },
+    {
+      "page": " ◆  Slot",
+      "id": "4020:4489",
+      "sets": 2,
+      "standalone": 1,
+      "variants": 16
+    },
+    {
+      "page": "❖  Alert",
+      "id": "3232:209570",
+      "sets": 2,
+      "standalone": 0,
+      "variants": 10
+    },
+    {
+      "page": "❖  Avatars",
+      "id": "2078:21456",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 72
+    },
+    {
+      "page": "❖  Badge",
+      "id": "3295:1211",
+      "sets": 2,
+      "standalone": 1,
+      "variants": 17
+    },
+    {
+      "page": "❖  BreadCrumbs",
+      "id": "419:41076",
+      "sets": 2,
+      "standalone": 0,
+      "variants": 4
+    },
+    {
+      "page": "❖  Buttons",
+      "id": "1508:524",
+      "sets": 2,
+      "standalone": 0,
+      "variants": 372
+    },
+    {
+      "page": "❖  Field",
+      "id": "9019:224139",
+      "sets": 5,
+      "standalone": 0,
+      "variants": 24
+    },
+    {
+      "page": "❖  Chips",
+      "id": "2064:26420",
+      "sets": 1,
+      "standalone": 1,
+      "variants": 20
+    },
+    {
+      "page": "❖  Inputs",
+      "id": "2064:11453",
+      "sets": 4,
+      "standalone": 2,
+      "variants": 8
+    },
+    {
+      "page": "❖  Indicator",
+      "id": "9818:198101",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 15
+    },
+    {
+      "page": "❖  Link",
+      "id": "407:40905",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 24
+    },
+    {
+      "page": "❖  Loader",
+      "id": "440:41447",
+      "sets": 3,
+      "standalone": 0,
+      "variants": 16
+    },
+    {
+      "page": "❖  Menu",
+      "id": "5768:297905",
+      "sets": 4,
+      "standalone": 0,
+      "variants": 15
+    },
+    {
+      "page": "❖  Notification",
+      "id": "2259:17192",
+      "sets": 3,
+      "standalone": 0,
+      "variants": 14
+    },
+    {
+      "page": "❖  Tabs",
+      "id": "398:41895",
+      "sets": 3,
+      "standalone": 0,
+      "variants": 17
+    },
+    {
+      "page": "❖  Tooltips",
+      "id": "414:41009",
+      "sets": 2,
+      "standalone": 1,
+      "variants": 16
+    },
+    {
+      "page": "❖  Tree",
+      "id": "2586:241304",
+      "sets": 2,
+      "standalone": 0,
+      "variants": 10
+    },
+    {
+      "page": "❖  Scroll",
+      "id": "437:41315",
+      "sets": 2,
+      "standalone": 1,
+      "variants": 6
+    },
+    {
+      "page": "❖  Switchers",
+      "id": "2252:17005",
+      "sets": 6,
+      "standalone": 0,
+      "variants": 38
+    },
+    {
+      "page": "❖  Progress",
+      "id": "10724:4795",
+      "sets": 1,
+      "standalone": 1,
+      "variants": 12
+    },
+    {
+      "page": "❖  User",
+      "id": "3457:244308",
+      "sets": 5,
+      "standalone": 0,
+      "variants": 28
+    },
+    {
+      "page": "💠 Accordion",
+      "id": "9875:27088",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 2
+    },
+    {
+      "page": "💠 Card",
+      "id": "2076:156915",
+      "sets": 1,
+      "standalone": 0,
+      "variants": 4
+    },
+    {
+      "page": "💠 CheckList",
+      "id": "10706:19298",
+      "sets": 6,
+      "standalone": 0,
+      "variants": 16
+    },
+    {
+      "page": "💠 Comments",
+      "id": "10077:199388",
+      "sets": 11,
+      "standalone": 3,
+      "variants": 39
+    },
+    {
+      "page": "💠 Content-groups",
+      "id": "2459:309776",
+      "sets": 4,
+      "standalone": 6,
+      "variants": 11
+    },
+    {
+      "page": "💠 Date-Picker",
+      "id": "2078:21457",
+      "sets": 6,
+      "standalone": 1,
+      "variants": 34
+    },
+    {
+      "page": "💠 Dropdown",
+      "id": "2348:17776",
+      "sets": 10,
+      "standalone": 5,
+      "variants": 42
+    },
+    {
+      "page": "💠 File-Upload",
+      "id": "2533:139727",
+      "sets": 5,
+      "standalone": 0,
+      "variants": 14
+    },
+    {
+      "page": "💠 Headers",
+      "id": "1071:28184",
+      "sets": 2,
+      "standalone": 4,
+      "variants": 6
+    },
+    {
+      "page": "💠 Navigation",
+      "id": "5622:126779",
+      "sets": 4,
+      "standalone": 1,
+      "variants": 11
+    },
+    {
+      "page": "💠 Inline editor",
+      "id": "633:21388",
+      "sets": 3,
+      "standalone": 2,
+      "variants": 11
+    },
+    {
+      "page": "💠 Modals",
+      "id": "1460:93686",
+      "sets": 6,
+      "standalone": 3,
+      "variants": 22
+    },
+    {
+      "page": "💠 Pagination",
+      "id": "440:42011",
+      "sets": 0,
+      "standalone": 2,
+      "variants": 0
+    },
+    {
+      "page": "💠 Table",
+      "id": "485:60059",
+      "sets": 10,
+      "standalone": 0,
+      "variants": 85
+    },
+    {
+      "page": "🔥  Таблицы",
+      "id": "2460:309826",
+      "sets": 1,
+      "standalone": 36,
+      "variants": 2
+    },
+    {
+      "page": "🔥  Charts",
+      "id": "11797:97292",
+      "sets": 4,
+      "standalone": 5,
+      "variants": 17
+    },
+    {
+      "page": "🔥  Drawers",
+      "id": "5958:146564",
+      "sets": 3,
+      "standalone": 3,
+      "variants": 6
+    },
+    {
+      "page": "🔥  Layouts",
+      "id": "6832:24741",
+      "sets": 0,
+      "standalone": 2,
+      "variants": 0
+    },
+    {
+      "page": "🔥  Техподдержка",
+      "id": "1074:51786",
+      "sets": 0,
+      "standalone": 1,
+      "variants": 0
+    },
+    {
+      "page": "📝 Фильтры и сортировки",
+      "id": "8120:78331",
+      "sets": 1,
+      "standalone": 4,
+      "variants": 3
+    },
+    {
+      "page": "📝 Состояние и типы ячеек",
+      "id": "8429:60392",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": "📝 DropDown + Мультиселект",
+      "id": "10495:12058",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": "📒 Cover",
+      "id": "1815:8020",
+      "sets": 0,
+      "standalone": 0,
+      "variants": 0
+    },
+    {
+      "page": "🔧 Песочница",
+      "id": "1015:26628",
+      "sets": 0,
+      "standalone": 2,
+      "variants": 0
+    },
+    {
+      "page": "⌚ Отложенное",
+      "id": "5862:96769",
+      "sets": 2,
+      "standalone": 0,
+      "variants": 3
+    },
+    {
+      "page": "🧰 Assets",
+      "id": "1529:2896",
+      "sets": 8,
+      "standalone": 11,
+      "variants": 34
+    }
+  ]
+}

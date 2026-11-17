@@ -1,0 +1,315 @@
+---
+import { getCollection } from 'astro:content';
+import CaseCard from './CaseCard.astro';
+import Figure from './case/Figure.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+import { site } from '@/site';
+import HeroDemo from '@/prototypes/HeroDemo';
+import HeroBlueprint from '@/prototypes/HeroBlueprint';
+import Inspect from './Inspect.astro';
+import CommandMenu from './CommandMenu.astro';
+import { withBase } from '@/lib/utils';
+import { skills, tools } from '@/data/portfolio-skills';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+// Крупная карточка — первый кейс по порядку (order: 0)
+const leadId = cases[0]?.id;
+
+const craftAll = [
+  { src: '/images/home/craft-1-mode.jpg', caption: '**Режим подборки виден всегда.** Баннер с названием и выходом, счётчик ФД, сохранённые фильтры' },
+  { src: '/images/home/craft-2-mileage.jpg', caption: '**Пробег при выезде на линию.** Понятная формулировка, прошлое показание, ввод по фото' },
+  { src: '/images/home/craft-3-field.jpg', caption: '**.Field: семь состояний.** Экспорт компонента из Noboring DS' },
+  { src: '/images/home/craft-4-next-action.jpg', caption: '**Следующее действие — на виду.** Чек-лист решения и «Взять в работу» в начале карточки обращения' },
+];
+// Показываем только загруженные фрагменты; пока картинок нет — секцию не выводим
+const hasFile = (src: string) => fs.existsSync(path.join(process.cwd(), 'public', src));
+const craft = craftAll.filter((c) => hasFile(c.src));
+const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
+
+// Принципы — выводы из кейсов, у каждого ссылка на доказательство
+const principles = [
+  {
+    title: 'У состояния есть причина, ответственный и следующее действие',
+    text: 'Статус без объяснения оставляет человека ждать. В ЭПЛ водитель видит, что делать дальше, а сотрудник — на каком этапе обработка и почему она встала.',
+    proof: { slug: 'taxi-epl', label: 'ЭПЛ и договоры' },
+  },
+  {
+    title: 'Проверяю модель, а не расположение кнопок',
+    text: 'Тесты меняли постановку задачи: метки риска уступили отдельному реестру обращений, четыре поля встречи — чек-листу.',
+    proof: { slug: 'research-appeals', label: 'Входящие обращения' },
+  },
+  {
+    title: 'Проверяю сценарий на работающем прототипе',
+    text: 'Прототипы собираю в коде на компонентах дизайн-системы: на тесте вводятся настоящие данные, а связки не ломаются.',
+    proof: { slug: 'noboring-ds', label: 'Noboring Design System' },
+  },
+];
+
+// Путь: вехи с кейсами-доказательствами
+const timeline = [
+  { year: '2019', place: 'DDoS-Guard', text: 'Первая роль дизайнера — четыре года в продукте.' },
+  { year: '2023', place: 'Нескучные финансы', text: 'Пришёл ведущим UI-дизайнером. С августа строю токенную архитектуру — из неё выросла Noboring Design System.', proof: { slug: 'noboring-ds', label: 'Кейс дизайн-системы' } },
+  { year: '2024', place: 'Нескучные финансы', text: 'Свои исследования и разделы: встречи и задачи — около 20 модерируемых сессий, 3 итерации, раздел в продакшене.', proof: { slug: 'erp-meetings', label: 'Кейс встреч и задач' } },
+  { year: '2025', place: 'База Такси', text: 'С октября — приложение водителя и админка: электронный путевой лист вместо ручной выписки, договор по SMS.', proof: { slug: 'taxi-epl', label: 'Кейс ЭПЛ' } },
+  { year: '2026', place: 'НФ и База Такси', text: 'Прототипы в агентах Claude и Codex: кабинеты оператора и таксопарка, кабинет клиента. 87% экземпляров в макетах ERP — из библиотеки.' },
+];
+const casesTotal = cases.length;
+
+
+---
+
+<div class="mx-auto w-full max-w-6xl px-4 sm:px-8" transition:animate="none">
+  <header class="no-print relative z-10 flex items-center justify-between py-6">
+    <a
+      href={import.meta.env.BASE_URL}
+      aria-label={`${site.name} — на главную`}
+      class="grid size-10 place-items-center rounded-full border border-text font-mono text-[13px] font-medium tracking-tight hover:bg-text hover:text-bg"
+      >ЕГ</a
+    >
+    <nav class="flex items-center gap-5 text-sm text-muted">
+      <a href="#cases" class="hidden hover:text-text sm:inline">Кейсы</a>
+      <a href="#skills" class="hidden hover:text-text sm:inline">Навыки</a>
+      <Inspect />
+      <CommandMenu cases={cases.map((c) => ({ id: c.id, title: c.data.cardTitle ?? c.data.title, meta: c.data.company }))} />
+      <a href={site.telegram} class="rounded-full bg-text px-4 py-2 font-medium whitespace-nowrap text-bg hover:opacity-90" target="_blank" rel="noopener">
+        <span class="sm:hidden">Telegram</span><span class="hidden sm:inline">Написать в Telegram</span>
+      </a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Интро -->
+    <section class="relative isolate grid items-center gap-12 pt-10 pb-16 sm:pt-16 sm:pb-24 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+      <HeroBlueprint client:idle />
+      <div>
+      <p class="text-xl font-semibold tracking-tight sm:text-2xl">{site.name}</p>
+      <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+        <span>{site.role}</span>
+        <span aria-hidden="true">·</span>
+        <span>{site.city}</span>
+        <span aria-hidden="true">·</span>
+        <span class="inline-flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-st-green" aria-hidden="true"></span>Открыт к предложениям</span>
+      </p>
+      <h1 class="mt-6 max-w-4xl text-[clamp(2.1rem,3.7vw,3.1rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-balance">
+        Проектирую сложные B2B-системы — и собираю прототипы в AI-агентах
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg text-muted text-pretty">
+        Связываю исследования, интерфейсы и код: разбираюсь в рабочих процессах, проектирую продуктовые сценарии и строю дизайн-системы,
+        которые помогают команде доводить решения до реализации.
+      </p>
+      <p class="mt-4 max-w-2xl text-lg text-muted text-pretty">
+        В «Нескучных финансах» развиваю ERP и <strong class="font-semibold text-text">Noboring Design System</strong>. В Базе Такси проектирую
+        приложение водителя и админку таксопарка.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3 text-sm">
+        <a href="#cases" class="rounded-full bg-accent px-5 py-2.5 font-medium text-on-accent transition-opacity hover:opacity-90">Смотреть кейсы</a>
+        <a href={site.telegram} target="_blank" rel="noopener" class="rounded-full border border-line px-5 py-2.5 font-medium hover:bg-surface"
+          >Telegram {site.telegramHandle}</a
+        >
+      </div>
+
+      </div>
+      <HeroDemo client:visible />
+    </section>
+
+    <!-- Кейсы -->
+    <section id="cases" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h2 class="text-3xl font-semibold tracking-tight">Избранные проекты</h2>
+        <p class="max-w-md text-[15px] text-muted">
+          Сервис для двух ролей, процесс с исследованиями, системная платформа, исследование, которое поменяло задачу, и фича с измеренным эффектом.
+        </p>
+      </div>
+      {
+        cases.length === 0 ? (
+          <p class="mt-10 rounded-[var(--radius-card)] border border-dashed border-line p-8 text-muted">
+            Кейсов пока нет. Добавь файл в src/content/cases — карточка появится здесь.
+          </p>
+        ) : (
+          <div class="case-grid mt-10">
+            {cases.map((entry, index) => (
+              <CaseCard entry={entry} index={index} lead={entry.id === leadId} />
+            ))}
+          </div>
+        )
+      }
+    </section>
+
+
+    <!-- Принципы -->
+    <section id="principles" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
+      <h2 class="max-w-3xl text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] font-semibold tracking-[-0.02em] text-balance">
+        Интерфейс объясняет, что происходит и что делать дальше
+      </h2>
+      <ol class="mt-10 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-3">
+        {principles.map((pr) => (
+          <li class="flex flex-col bg-surface p-6">
+            <h3 class="text-lg leading-snug font-semibold">{pr.title}</h3>
+            <p class="mt-3 text-[15px] text-muted text-pretty">{pr.text}</p>
+            <a class="link mt-auto pt-5 text-sm" href={withBase(`/cases/${pr.proof.slug}`)}>{pr.proof.label} →</a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- Что умею -->
+    <section id="skills" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h2 class="text-3xl font-semibold tracking-tight">Что умею</h2>
+        <p class="max-w-md text-[15px] text-muted">У каждого навыка — кейс, где его видно в работе</p>
+      </div>
+      <dl class="mt-10 border-t border-line">
+        {skills.map((g) => (
+          <div class="grid gap-3 border-b border-line py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-8">
+            <dt>
+              <h3 class="text-lg font-semibold">{g.title}</h3>
+              <p class="mt-2 text-sm text-muted">
+                Где видно:{' '}
+                {g.proof.map((c, j) => <span>{j > 0 && ', '}<a class="link" href={withBase(`/cases/${c.slug}`)}>{c.label}</a></span>)}
+              </p>
+            </dt>
+            <dd>
+              <ul class="grid gap-2 text-[15px] text-muted sm:grid-cols-2 sm:gap-x-8">
+                {g.items.map((it) => <li class="text-pretty" set:html={it} />)}
+              </ul>
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <p class="mt-6 text-sm text-muted">
+        <span class="text-text">Инструменты:</span> {tools.join(' · ')}
+      </p>
+    </section>
+
+    <!-- Интерфейс крупно -->
+    {(craft.length > 0 || craftWide) && (
+    <section class="border-t border-line py-16 sm:py-20">
+      <h2 class="text-3xl font-semibold tracking-tight">Интерфейс крупно</h2>
+      <p class="mt-3 max-w-2xl text-[15px] text-muted">
+        Плотные B2B-экраны держатся на деталях: иерархия, состояния, подсказки в нужный момент. Фрагменты реальных макетов из кейсов, данные
+        демонстрационные.
+      </p>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+        {craft.map((item) => <Figure src={item.src} caption={item.caption} alt={item.caption.replace(/\*\*/g, '')} />)}
+      </div>
+      {craftWide && (<div class="mt-6">
+        <Figure
+          src="/images/home/craft-5-multiselect.jpg"
+          caption="**Мультиселект в плотной таблице.** Выбранные значения схлопываются в счётчик и раскрываются до 3,5 строк"
+          alt="Мультиселект в плотной таблице: выбранные значения схлопываются в счётчик"
+        />
+      </div>)}
+    </section>
+    )}
+
+    <!-- Как работаю -->
+    <section id="process" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
+      <h2 class="text-3xl font-semibold tracking-tight">Как я проверяю решения в работающих прототипах</h2>
+      <p class="mt-3 max-w-3xl text-[15px] text-muted text-pretty">
+        Прототипы собираю в агентах Claude и Codex на компонентах дизайн-системы: в них работает ввод данных и не ломаются связки, как в Figma-прототипах.
+      </p>
+      <div class="mt-10 overflow-x-auto rounded-[var(--radius-card)] border border-line bg-surface">
+        <table class="w-full min-w-[640px] text-left text-[15px] leading-snug">
+          <thead class="bg-surface-2 text-[13px] text-muted">
+            <tr>
+              <th class="w-1/4 p-4 font-semibold"></th>
+              <th class="p-4 font-semibold">Раньше: прототип в Figma</th>
+              <th class="p-4 font-semibold text-accent">Сейчас: прототип в агенте</th>
+            </tr>
+          </thead>
+          <tbody class="[&_td]:border-t [&_td]:border-line [&_td]:p-4 [&_td]:align-top">
+            <tr><td class="font-medium">Срок до первого обсуждения</td><td class="text-muted">1–2 недели</td><td>Максимум 1 день</td></tr>
+            <tr>
+              <td class="font-medium">Ввод данных в тесте</td><td class="text-muted">Участник кликает по заготовленным переходам</td><td
+                >Участник вводит свои данные, поля и фильтры работают</td
+              >
+            </tr>
+            <tr>
+              <td class="font-medium">Качество наблюдений</td><td class="text-muted"
+                >В сложных прототипах ломались связки — часть затруднений создавал сам прототип</td
+              ><td>Затруднения про интерфейс, а не про сломанный переход</td>
+            </tr>
+            <tr>
+              <td class="font-medium">Основа</td><td class="text-muted">Компоненты и связи Figma</td><td
+                >Дизайн-система с контрактом Figma ↔ React и инструкциями для агента</td
+              >
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-6 max-w-3xl text-[15px] text-muted text-pretty">
+        Прототип в агенте — инструмент проверки и обсуждения: команда спорит о работающем интерфейсе, а не о картинках. <strong
+          class="font-semibold text-text">Так уже собраны:</strong
+        > в ERP — встречи и задачи, «Пульс бизнеса», дашборды и кабинет клиента; в Базе Такси — кабинет оператора и таксопарка.
+      </p>
+      <div class="mt-8 flex flex-col gap-4 rounded-[var(--radius-card)] border border-line bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div class="max-w-2xl">
+          <p class="font-semibold">Открытые материалы</p>
+          <p class="mt-1 text-[15px] text-muted text-pretty">
+            Этот сайт тоже собран в агентах. Исходники открыты: правила проекта для Claude Code и Codex, навыки для переноса кейса из Notion и Figma, автопубликация.
+          </p>
+        </div>
+        <div class="flex shrink-0 flex-wrap gap-2 text-sm">
+          <a href={site.github} target="_blank" rel="noopener" class="rounded-full border border-line px-4 py-2 font-medium hover:bg-surface-2">Репозиторий ↗</a>
+          <a href={`${site.github}/tree/main/.agents/skills`} target="_blank" rel="noopener" class="rounded-full border border-line px-4 py-2 font-medium hover:bg-surface-2">Навыки агентов ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Путь -->
+    <section class="border-t border-line py-16 sm:py-20">
+      <div class="flex items-center gap-4">
+        <img
+          src={withBase('/images/home/portrait.webp')}
+          alt="Фото Евгения Горлинского"
+          width="64"
+          height="64"
+          loading="lazy"
+          class="size-16 rounded-full border border-line object-cover"
+        />
+        <div>
+          <h2 class="text-3xl font-semibold tracking-tight">Мой путь</h2>
+          <p class="mt-1 text-[15px] text-muted">В дизайне с 2019 года. Вехи — со ссылками на кейсы</p>
+        </div>
+      </div>
+      <ol class="relative mt-10 ml-4 border-l border-line pl-8 sm:ml-6">
+        {timeline.map((t, i) => (
+          <li class={`relative ${i < timeline.length - 1 ? 'pb-10' : ''}`}>
+            <span
+              class={`absolute top-0 -left-[49px] grid size-8 place-items-center rounded-full border bg-bg font-mono text-[12px] ${i === timeline.length - 1 ? 'border-accent text-accent' : 'border-line text-muted'}`}
+              aria-hidden="true">{i + 1}</span
+            >
+            <p class="font-mono text-sm text-muted">{t.year}</p>
+            <p class="mt-1 text-lg font-semibold">{t.place}</p>
+            <p class="mt-2 max-w-2xl text-[15px] text-muted text-pretty">{t.text}</p>
+            {t.proof && <a class="link mt-2 inline-block text-sm" href={withBase(`/cases/${t.proof.slug}`)}>{t.proof.label} →</a>}
+          </li>
+        ))}
+      </ol>
+    </section>
+  </main>
+
+  <!-- Подвал: основная надпись чертежа (по мотивам ГОСТ 2.104) -->
+  <footer class="no-print flex flex-col gap-6 border-t border-line py-10 lg:flex-row lg:items-end lg:justify-between">
+    <p class="max-w-xs text-sm text-muted">Сайт собран в агентах Claude Code и Codex на Astro. Данные в макетах демонстрационные.</p>
+    <div class="stamp w-full max-w-3xl font-mono text-[12px] leading-tight" aria-label="Контакты">
+      <div class="stamp-cell stamp-k">Разраб.</div>
+      <div class="stamp-cell stamp-v">{site.name}</div>
+      <div class="stamp-cell stamp-k">Город</div>
+      <div class="stamp-cell stamp-v">{site.city}</div>
+      <div class="stamp-cell stamp-title">
+        <span class="font-sans text-[15px] font-semibold">Портфолио продуктового дизайнера</span>
+        <span class="text-muted">B2B и сложные системы</span>
+      </div>
+      <div class="stamp-cell stamp-k">Связь</div>
+      <div class="stamp-cell stamp-v"><a class="link" href={site.telegram} target="_blank" rel="noopener">Telegram {site.telegramHandle}</a></div>
+      <div class="stamp-cell stamp-k">Профиль</div>
+      <div class="stamp-cell stamp-v"><a class="link" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a></div>
+      <div class="stamp-cell stamp-k">Статус</div>
+      <div class="stamp-cell stamp-v"><span class="inline-flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-st-green" aria-hidden="true"></span>Открыт к предложениям</span></div>
+      <div class="stamp-cell stamp-k">Листов</div>
+      <div class="stamp-cell stamp-v">{casesTotal + 1}: главная и {casesTotal} кейсов</div>
+    </div>
+  </footer>
+</div>

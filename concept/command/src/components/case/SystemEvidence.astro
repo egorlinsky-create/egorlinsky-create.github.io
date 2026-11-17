@@ -1,0 +1,45 @@
+---
+import audit from '@/data/noboring-ds-audit.json';
+const tokens = audit.variables.reduce((sum, collection) => sum + collection.count, 0);
+const styles = Object.values(audit.styles).reduce((sum, count) => sum + count, 0);
+const format = (n: number) => n.toLocaleString('ru-RU');
+const metrics = [
+  { value: tokens, label: 'дизайн-токенов', note: 'Цвета, размеры, типографика и свойства компонентов' },
+  { value: styles, label: 'стиль', note: '51 текстовый · 13 цветовых · 7 эффектов' },
+  { value: audit.components.families, label: 'наборов и отдельных компонентов', note: '121 набор вариантов + 34 отдельных компонента' },
+  { value: audit.components.definitions, label: 'мастер-компонентов', note: '1 035 вариантов внутри наборов + 34 отдельных компонента' },
+];
+---
+<section class="system-evidence not-prose" aria-labelledby="system-evidence-title">
+  <h2 id="system-evidence-title">Масштаб системы</h2>
+  <p class="evidence-intro">Общая библиотека для форм, таблиц и составных интерфейсов ERP: от токенов и стилей до компонентов с вариантами и состояниями.</p>
+  <dl class="evidence-grid">
+    {metrics.map(metric => <div><dt><span class="evidence-value">{format(metric.value)}</span>{metric.label}</dt><dd>{metric.note}</dd></div>)}
+  </dl>
+  <details>
+    <summary>Источник и метод подсчёта · 15 ноября 2026</summary>
+    <p>Срез файла Noboring DS в Figma. Одна переменная считается одним токеном независимо от числа режимов. Шесть коллекций: {audit.variables.map(c => `${c.name} — ${c.count}`).join('; ')}. Текстовые, цветовые стили и эффекты посчитаны отдельно от переменных.</p>
+    <p>Компоненты посчитаны на страницах компонентов и организмов, отмеченных ❖ и 💠. Набор вариантов считается одной единицей в показателе 155; его мастер-варианты — отдельно в показателе 1 069. Эти показатели не складываются. Экземпляры в макетах, атомы, иконки, шаблоны, гайды и служебные страницы не входят в этот подсчёт компонентов.</p>
+    <p>Это масштаб библиотеки на дату среза. Экраны, переданные в разработку, и ускорение работы этим подсчётом не измеряются.</p>
+  </details>
+</section>
+<style>
+  .system-evidence { margin-block: 2.5rem; }
+  h2 { margin: 0 0 1rem; font-size: 1.75rem; line-height: 1.2; font-weight: 500; letter-spacing: -.02em; }
+  .evidence-intro { max-width: 66ch; font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem; }
+  .evidence-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); border: 1px solid var(--c-line); border-radius: 1rem; overflow: hidden; }
+  .evidence-grid > div { padding: 1.5rem 1.1rem; min-width: 0; }
+  .evidence-grid > div + div { border-left: 1px solid var(--c-line); }
+  .evidence-value { display: block; margin: 0 0 .65rem; font-size: clamp(2rem,3vw,2.8rem); line-height: 1; font-weight: 600; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  dt { font-size: .9rem; font-weight: 500; line-height: 1.4; }
+  .evidence-grid dd { margin: .65rem 0 0; color: var(--c-muted); font-size: .75rem; line-height: 1.5; }
+  details { margin-top: 1rem; font-size: .8rem; line-height: 1.65; color: var(--c-muted); }
+  summary { cursor: pointer; padding-block: .5rem; }
+  details p { margin-block: .75rem; }
+  @media(max-width: 1050px) {
+    .evidence-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .evidence-grid > div:nth-child(3) { border-left: 0; }
+    .evidence-grid > div:nth-child(n+3) { border-top: 1px solid var(--c-line); }
+  }
+  @media(max-width: 420px) { .evidence-grid > div { padding: 1.1rem .85rem; } dt { font-size: .82rem; } }
+</style>

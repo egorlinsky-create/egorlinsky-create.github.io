@@ -1,0 +1,65 @@
+---
+import path from 'node:path';
+import { withBase } from '@/lib/utils';
+import { imageSize } from '@/lib/image-size';
+
+/**
+ * Короткая анимация вместо тяжёлой GIF: mp4 без звука, по кругу, играет только на экране.
+ * При «уменьшить движение» не стартует сама — остаётся постер и кнопки управления.
+ */
+interface Props {
+  src: string; // /images/<slug>/<name>.mp4, рядом <name>-poster.webp
+  caption?: string;
+  alt?: string;
+  /** phone — узкий экран телефона на подложке */
+  fit?: 'full' | 'phone';
+}
+const { src, caption, alt, fit = 'full' } = Astro.props;
+const poster = src.replace(/\.mp4$/, '-poster.webp');
+const size = imageSize(path.join(process.cwd(), 'public', poster));
+const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const captionHtml = caption ? escape(caption).replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-text">$1</strong>') : '';
+const label = alt ?? (caption ? caption.replace(/\*\*/g, '') : 'Анимация');
+const phoneStyle = fit === 'phone' && size ? `width: auto; max-width: min(100%, ${Math.min(size.width, 300)}px)` : undefined;
+---
+
+<figure class="fig reveal not-prose">
+  <div class:list={[fit === 'phone' && 'fig-stage']}>
+    <video
+      class:list={['fig-img', fit === 'phone' && 'fig-phone']}
+      style={phoneStyle}
+      src={withBase(src)}
+      poster={withBase(poster)}
+      width={size?.width}
+      height={size?.height}
+      muted
+      loop
+      playsinline
+      preload="none"
+      data-autoplay
+      aria-label={label}></video>
+  </div>
+  {captionHtml && <figcaption class="mt-3 text-[14px] leading-snug text-muted" set:html={captionHtml} />}
+</figure>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting && !reduce.matches) v.play().catch(() => {});
+        else v.pause();
+      }
+    },
+    { threshold: 0.4 },
+  );
+  function init() {
+    document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]').forEach((v) => {
+      if (reduce.matches) v.controls = true;
+      io.observe(v);
+    });
+  }
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

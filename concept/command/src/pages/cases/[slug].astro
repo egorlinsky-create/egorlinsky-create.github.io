@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Home from '@/components/Home.astro';
+import CasePanel from '@/components/CasePanel.astro';
+import Table from '@/components/case/Table.astro';
+import { site } from '@/site';
+
+export async function getStaticPaths() {
+  const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+  return cases.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, prev: cases[i - 1], next: cases[i + 1] },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Base title={`${entry.data.cardTitle} — ${site.name}`} description={entry.data.summary} image={entry.data.cover}>
+  <!-- Главная остаётся под панелью: прямую ссылку на кейс открывают поверх портфолио, как в Notion -->
+  <div aria-hidden="true" inert class="no-print">
+    <Home />
+  </div>
+  <CasePanel entry={entry} prev={prev} next={next}>
+    <Content components={{ table: Table }} />
+  </CasePanel>
+</Base>

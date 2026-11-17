@@ -1,0 +1,171 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import StatusChip from './StatusChip.astro';
+import { withBase } from '@/lib/utils';
+import { site } from '@/site';
+
+interface Props {
+  entry: CollectionEntry<'cases'>;
+  prev?: CollectionEntry<'cases'>;
+  next?: CollectionEntry<'cases'>;
+  variant?: 'default' | 'command';
+  projects?: CollectionEntry<'cases'>[];
+}
+const { entry, prev, next, variant = 'default', projects = [] } = Astro.props;
+const command = variant === 'command';
+const caseHref = (id:string) => withBase(`${command ? '/command' : ''}/cases/${id}`);
+const { title, company, product, type, status, accent } = entry.data;
+const home = withBase(command ? '/command' : '/');
+---
+
+<div class:list={["case-panel-root fixed inset-0 z-40",command && "command-case-root"]} transition:animate="none">
+  <a href={home} data-panel-close class="no-print case-backdrop absolute inset-0 bg-overlay" aria-label="Закрыть кейс" tabindex="-1"></a>
+
+  <div
+    data-case-panel={entry.id}
+    data-case-home={command ? home : undefined}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="case-title"
+    class="case-panel absolute inset-y-0 right-0 flex w-full max-w-[880px] flex-col bg-bg shadow-[-24px_0_64px_-24px_rgb(0_0_0/0.35)] sm:rounded-l-3xl"
+  >
+    {command && <aside class="command-case-rail no-print">
+      <a href={home} data-panel-close class="command-case-author"><img src={withBase('/images/home/portrait-engineer-poster.png')} width="56" height="56" alt=""/><span>Евгений<br/>Горлинский<small>Продуктовый дизайнер</small></span></a>
+      <div class="command-case-rail-label">Проекты <span>{projects.length}</span></div>
+      <nav aria-label="Кейсы портфолио">{projects.map((project,index)=><a href={caseHref(project.id)} aria-current={project.id===entry.id ? 'page' : undefined}><span class="command-case-index">0{index+1}</span><span>{project.data.cardTitle}<small>{project.data.company}</small></span></a>)}</nav>
+      <a class="command-case-all" href={home} data-panel-close>← Все проекты</a>
+    </aside>}
+    <div class="case-panel-main flex min-h-0 flex-1 flex-col">
+    <div class="command-case-toolbar no-print flex items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-8">
+      <a href={home} data-panel-close class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm text-muted hover:bg-surface-2 hover:text-text">
+        <span aria-hidden="true">{command ? '←' : '✕'}</span> {command ? 'Все проекты' : 'Закрыть'} <kbd class="hidden rounded border border-line px-1.5 font-mono text-[11px] sm:inline">Esc</kbd>
+      </a>
+      <div class="flex items-center gap-1 text-sm">
+        <button
+          type="button"
+          data-copy-link
+          class="rounded-full px-3 py-1.5 text-muted hover:bg-surface-2 hover:text-text"
+          aria-live="polite">Скопировать ссылку</button
+        >
+      </div>
+    </div>
+
+    {command && <label class="command-case-picker no-print"><span>Проект</span><select data-case-picker aria-label="Выбрать кейс">{projects.map(project=><option value={caseHref(project.id)} selected={project.id===entry.id}>{project.data.cardTitle}</option>)}</select></label>}
+    <div class="case-panel-scroll flex-1 overflow-y-auto overscroll-contain">
+      <article class="mx-auto max-w-[720px] px-5 pt-8 pb-20 sm:px-8 sm:pt-12">
+        <header class="command-case-intro">
+        <p class="text-sm text-muted">{company} · {product}</p>
+        <h1
+          id="case-title"
+          data-panel-title
+          tabindex="-1"
+          class="mt-3 text-[clamp(1.6rem,3.4vw,2.4rem)] leading-[1.12] font-semibold tracking-[-0.02em] text-balance outline-none"
+        >
+          {title}
+        </h1>
+        <div class="mt-4 flex flex-wrap items-center gap-2 text-[13px] text-muted">
+          <StatusChip label={status} tone={accent} />
+          <span>{type}</span>
+        </div>
+
+        </header>
+        <div class="prose-case mt-10">
+          <slot />
+        </div>
+
+        <nav class="no-print mt-16 grid gap-3 border-t border-line pt-8 sm:grid-cols-2" aria-label="Другие кейсы">
+          {
+            prev && (
+              <a href={caseHref(prev.id)} class="rounded-2xl border border-line p-4 hover:bg-surface">
+                <span class="text-[13px] text-muted">← Предыдущий</span>
+                <span class="mt-1 block font-medium">{prev.data.cardTitle}</span>
+              </a>
+            )
+          }
+          {
+            next && (
+              <a href={caseHref(next.id)} class="rounded-2xl border border-line p-4 text-right hover:bg-surface sm:col-start-2">
+                <span class="text-[13px] text-muted">Следующий →</span>
+                <span class="mt-1 block font-medium">{next.data.cardTitle}</span>
+              </a>
+            )
+          }
+        </nav>
+
+        <div class="no-print mt-10 rounded-2xl bg-surface-2 p-5 text-[15px]">
+          <a class="link" href={site.telegram} target="_blank" rel="noopener">Обсудить проект в Telegram ↗</a>
+        </div>
+      </article>
+    </div>
+  </div>
+  </div>
+</div>
+
+<style>
+  @media (prefers-reduced-motion: no-preference) {
+    .case-panel {
+      animation: panel-in 320ms var(--ease-out) both;
+    }
+    :global(html[data-case-switch]) .command-case-root .case-panel:not([data-closing]),
+    :global(html[data-case-switch]) .command-case-root:not(:has([data-closing])) .case-backdrop {
+      animation: none;
+    }
+    :global(html[data-case-switch]) .command-case-root .case-panel-scroll {
+      animation: case-content-in 160ms ease-out both;
+    }
+    .case-backdrop {
+      animation: fade-in 240ms var(--ease-out) both;
+    }
+    [data-closing] {
+      animation: panel-out 200ms var(--ease-in) both;
+    }
+    .case-panel-root:has([data-closing]) .case-backdrop {
+      animation: fade-out 200ms var(--ease-in) both;
+    }
+  }
+  @keyframes case-content-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes panel-in {
+    from {
+      transform: translateX(48px);
+      opacity: 0;
+    }
+  }
+  @keyframes panel-out {
+    to {
+      transform: translateX(48px);
+      opacity: 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+  document.addEventListener('astro:page-load', () => {
+    const picker=document.querySelector<HTMLSelectElement>('[data-case-picker]');
+    picker?.addEventListener('change',()=>navigate(picker.value));
+    const btn = document.querySelector<HTMLButtonElement>('[data-copy-link]');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        btn.textContent = 'Ссылка скопирована';
+      } catch {
+        btn.textContent = 'Не удалось скопировать — возьмите ссылку из адресной строки';
+      }
+      window.setTimeout(() => (btn.textContent = 'Скопировать ссылку'), 2400);
+    });
+  });
+</script>

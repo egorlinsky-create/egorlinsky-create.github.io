@@ -1,0 +1,35 @@
+{
+  "$comment": "Внешние навыки ставятся командой npm run skills:install (publish.cmd ставит недостающие сам). global: true — ещё и в пользовательские папки Claude Code и Codex, чтобы навык работал во всех проектах.",
+  "agents": [
+    "claude-code",
+    "codex"
+  ],
+  "external": [
+    {
+      "name": "shadcn",
+      "source": "shadcn/ui",
+      "why": "Компоненты shadcn/ui, CLI, реестры (@magicui, @aceternity, 21st.dev, affectUI) и MCP"
+    },
+    {
+      "name": "magic-ui",
+      "source": "magicuidesign/magicui",
+      "why": "Анимированные блоки Magic UI"
+    },
+    {
+      "name": "emil-design-eng",
+      "source": "emilkowalski/skill",
+      "why": "Принципы UI-моушена: создание, ревью и аудит анимаций"
+    },
+    {
+      "name": "gsap",
+      "source": "https://github.com/greensock/gsap-skills",
+      "why": "GSAP: ScrollTrigger, timeline, useGSAP — scroll-сторителлинг в кейсах"
+    },
+    {
+      "name": "unslop",
+      "source": "heydamir/unslop",
+      "global": true,
+      "why": "Аудит интерфейса на шаблонный «AI-слоп»: сначала разбор и направление, потом правки. Применять ко всем визуальным изменениям"
+    }
+  ]
+}

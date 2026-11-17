@@ -1,0 +1,22 @@
+---
+import { skills, tools } from '@/data/portfolio-skills';
+import { withBase } from '@/lib/utils';
+---
+<section class="command-skills" id="skills" aria-labelledby="command-skills-title">
+  <div class="command-skills-heading">
+    <h2 id="command-skills-title">Что умею</h2>
+    <p>От рабочего процесса до интерфейса, который можно проверить</p>
+  </div>
+  <div class="command-skills-body">
+    <dl>
+      {skills.map((group, groupIndex) => <div class="command-skill-row">
+        <dt>{group.title}</dt>
+        <dd>
+          <ul>{group.items.map(item => <li>{item}</li>)}</ul>
+          <div class="command-skill-proof"><span>В кейсах</span>{group.proof.map((proof, proofIndex) => <a data-skill-focus={`${groupIndex}-${proofIndex}`} href={withBase(`/command/cases/${proof.slug}`)}>{proof.label}<span aria-hidden="true"> ↗</span></a>)}</div>
+        </dd>
+      </div>)}
+    </dl>
+    <p class="command-skill-tools"><span>Инструменты</span>{tools.join(' · ')}</p>
+  </div>
+</section>

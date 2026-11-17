@@ -1,0 +1,61 @@
+---
+import path from 'node:path';
+import { withBase } from '@/lib/utils';
+import { imageSize } from '@/lib/image-size';
+
+/**
+ * «Было / стало»: два экрана друг над другом, разделитель тянется мышью, пальцем или стрелками.
+ * Картинки разного размера вписываются в общую рамку и не растягиваются.
+ */
+interface Props {
+  before: string;
+  after: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+  caption?: string;
+  alt?: string;
+}
+const { before, after, beforeLabel = 'Было', afterLabel = 'Стало', caption, alt } = Astro.props;
+const sb = imageSize(path.join(process.cwd(), 'public', before));
+const sa = imageSize(path.join(process.cwd(), 'public', after));
+// Общая рамка — по более «высокой» картинке, ширина колонки
+const ratio = Math.max(sb ? sb.height / sb.width : 0.6, sa ? sa.height / sa.width : 0.6);
+const maxW = Math.max(sb?.width ?? 0, sa?.width ?? 0) || 1200;
+const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const captionHtml = caption ? escape(caption).replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-text">$1</strong>') : '';
+const label = alt ?? (caption ? caption.replace(/\*\*/g, '') : 'Сравнение до и после');
+---
+
+<figure class="fig reveal not-prose">
+  <div class="cmp" data-compare style={`aspect-ratio: 1 / ${ratio.toFixed(4)}; max-width: ${maxW}px`} role="group" aria-label={label}>
+    <img src={withBase(before)} alt={`${beforeLabel}: ${label}`} class="cmp-img" loading="lazy" decoding="async" />
+    <div class="cmp-after" data-compare-after>
+      <img src={withBase(after)} alt={`${afterLabel}: ${label}`} class="cmp-img" loading="lazy" decoding="async" />
+    </div>
+    <span class="cmp-tag cmp-tag--before">{beforeLabel}</span>
+    <span class="cmp-tag cmp-tag--after">{afterLabel}</span>
+    <div class="cmp-handle" data-compare-handle aria-hidden="true"><span>⟷</span></div>
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      step="1"
+      class="cmp-range"
+      data-compare-range
+      aria-label={`Сдвиньте, чтобы сравнить: слева «${beforeLabel}», справа «${afterLabel}»`}
+    />
+  </div>
+  {captionHtml && <figcaption class="mt-3 text-[14px] leading-snug text-muted" set:html={captionHtml} />}
+</figure>
+
+<script>
+  function apply(root: HTMLElement, v: number) {
+    root.style.setProperty('--cmp', `${v}%`);
+  }
+  document.addEventListener('input', (e) => {
+    const r = e.target as HTMLInputElement;
+    if (!r.matches('[data-compare-range]')) return;
+    apply(r.closest<HTMLElement>('[data-compare]')!, Number(r.value));
+  });
+</script>

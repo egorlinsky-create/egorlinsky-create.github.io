@@ -1,0 +1,18 @@
+---
+/** Рамка для живого прототипа внутри кейса. Сам прототип — React-остров в слоте (client:visible). */
+interface Props {
+  title: string;
+  note?: string;
+}
+const { title, note = 'Живой прототип. Данные демонстрационные' } = Astro.props;
+---
+
+<section class="not-prose overflow-hidden rounded-2xl border border-line bg-surface-2" aria-label={title}>
+  <header class="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface px-5 py-3">
+    <p class="text-[15px] font-semibold">{title}</p>
+    <p class="text-[13px] text-muted">{note}</p>
+  </header>
+  <div class="p-4 sm:p-8">
+    <slot />
+  </div>
+</section>
