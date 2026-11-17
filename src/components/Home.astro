@@ -10,6 +10,7 @@ import HeroBlueprint from '@/prototypes/HeroBlueprint';
 import Inspect from './Inspect.astro';
 import CommandMenu from './CommandMenu.astro';
 import { withBase } from '@/lib/utils';
+import { skills, tools } from '@/data/portfolio-skills';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
 // Крупная карточка — первый кейс по порядку (order: 0)
@@ -26,59 +27,6 @@ const hasFile = (src: string) => fs.existsSync(path.join(process.cwd(), 'public'
 const craft = craftAll.filter((c) => hasFile(c.src));
 const craftWide = hasFile('/images/home/craft-5-multiselect.jpg');
 
-// Навыки — только то, что подтверждено кейсами на сайте
-const skills = [
-  {
-    title: 'Продуктовое проектирование',
-    items: [
-      'JTBD, сценарии и <strong class="font-medium text-text">статусные модели</strong>: у состояния есть причина, ответственный и условие перехода',
-      'Карты процесса (XMP) для нескольких ролей: водитель, менеджер, система',
-      'Плотные B2B-интерфейсы: реестры, фильтры, карточки, режимы работы',
-      'Все состояния и микротексты: пусто, загрузка, ошибка, edge cases',
-    ],
-    proof: [
-      { slug: 'taxi-epl', label: 'ЭПЛ' },
-      { slug: 'selection', label: 'Подборка ФД' },
-    ],
-  },
-  {
-    title: 'Исследования',
-    items: [
-      'Модерируемые юзабилити-тесты: <strong class="font-medium text-text">~20 сессий</strong> по встречам и задачам, около 10 — по обращениям',
-      'Гипотезы «если… то… потому что…» под каждое задание',
-      'Отчёты, где путь от эпизода сессии до решения прослеживается по таймкоду',
-      'Интервью после тестов, с менеджерами и стейкхолдерами',
-    ],
-    proof: [
-      { slug: 'erp-meetings', label: 'Встречи и задачи' },
-      { slug: 'research-appeals', label: 'Входящие обращения' },
-    ],
-  },
-  {
-    title: 'Дизайн-системы',
-    items: [
-      'Токены в три уровня: примитивы → семантика → компоненты; темы в одном слое',
-      'Компоненты по atomic design: состояние живёт в базовой части, подписи переиспользуются',
-      'Доступность: контраст статусов по замерам, AAA для чипсов',
-      'Контракт Figma ↔ React и Storybook. <strong class="font-medium text-text">87%</strong> экземпляров в макетах ERP — из библиотеки',
-    ],
-    proof: [{ slug: 'noboring-ds', label: 'Noboring Design System' }],
-  },
-  {
-    title: 'Прототипы в коде и AI-агентах',
-    items: [
-      'Прототипы уровня прода в Claude Code и Codex на компонентах дизайн-системы',
-      'Первая итерация для обсуждения — <strong class="font-medium text-text">за день</strong> вместо 1–2 недель',
-      'Работающий ввод данных на тестах вместо кликов по заготовленным переходам',
-      'Инструкции для агента в дизайн-системе: правила, компоненты, процессы',
-    ],
-    proof: [
-      { slug: 'erp-meetings', label: 'прототип встреч' },
-      { slug: 'selection', label: 'прототип подборки' },
-    ],
-  },
-];
-
 // Принципы — выводы из кейсов, у каждого ссылка на доказательство
 const principles = [
   {
@@ -92,7 +40,7 @@ const principles = [
     proof: { slug: 'research-appeals', label: 'Входящие обращения' },
   },
   {
-    title: 'Команда обсуждает работающий интерфейс, а не картинки',
+    title: 'Проверяю сценарий на работающем прототипе',
     text: 'Прототипы собираю в коде на компонентах дизайн-системы: на тесте вводятся настоящие данные, а связки не ломаются.',
     proof: { slug: 'noboring-ds', label: 'Noboring Design System' },
   },
@@ -108,7 +56,6 @@ const timeline = [
 ];
 const casesTotal = cases.length;
 
-const tools = ['Figma: variables, плагины, API', 'FigJam', 'Storybook', 'Claude Code', 'Codex', 'React + Tailwind', 'Notion'];
 
 ---
 
@@ -258,7 +205,7 @@ const tools = ['Figma: variables, плагины, API', 'FigJam', 'Storybook', '
 
     <!-- Как работаю -->
     <section id="process" class="scroll-mt-8 border-t border-line py-16 sm:py-20">
-      <h2 class="text-3xl font-semibold tracking-tight">Как я работаю: прототип уровня прода за день</h2>
+      <h2 class="text-3xl font-semibold tracking-tight">Как я проверяю решения в работающих прототипах</h2>
       <p class="mt-3 max-w-3xl text-[15px] text-muted text-pretty">
         Прототипы собираю в агентах Claude и Codex на компонентах дизайн-системы: в них работает ввод данных и не ломаются связки, как в Figma-прототипах.
       </p>

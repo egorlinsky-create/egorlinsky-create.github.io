@@ -1,29 +1,28 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '@/layouts/Base.astro';
-import Home from '@/components/Home.astro';
+import CommandHome from '@/components/CommandHome.astro';
 import CasePanel from '@/components/CasePanel.astro';
 import Table from '@/components/case/Table.astro';
+import CommandCaseLink from '@/components/case/CommandCaseLink.astro';
 import { site } from '@/site';
 
 export async function getStaticPaths() {
-  const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
-  return cases.map((entry, i) => ({
+  const projects = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((entry, i) => ({
     params: { slug: entry.id },
-    props: { entry, prev: cases[i - 1], next: cases[i + 1] },
+    props: { entry, prev: projects[i - 1], next: projects[i + 1], projects },
   }));
 }
 
-const { entry, prev, next } = Astro.props;
+const { entry, prev, next, projects } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<Base title={`${entry.data.cardTitle} — ${site.name}`} description={entry.data.summary} image={entry.data.cover}>
-  <!-- Главная остаётся под панелью: прямую ссылку на кейс открывают поверх портфолио, как в Notion -->
-  <div aria-hidden="true" inert class="no-print">
-    <Home />
-  </div>
-  <CasePanel entry={entry} prev={prev} next={next}>
-    <Content components={{ table: Table }} />
+<Base skipTarget="#case-title" title={`${entry.data.cardTitle} — ${site.name}`} description={entry.data.summary} image={entry.data.cover}>
+  <!-- Главная остаётся под панелью: прямую ссылку на кейс открывают поверх портфолио -->
+  <div aria-hidden="true" inert class="no-print"><CommandHome selectedCase={entry.id} /></div>
+  <CasePanel entry={entry} prev={prev} next={next} variant="command" projects={projects}>
+    <Content components={{ table: Table, a: CommandCaseLink }} />
   </CasePanel>
 </Base>

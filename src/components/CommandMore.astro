@@ -1,0 +1,290 @@
+---
+/**
+ * Нижняя часть главной: принципы с доказательствами, путь, открытые исходники, контакт.
+ * Каждый факт — один раз и со ссылкой на кейс. Без обещаний скорости и самооценки.
+ */
+import { withBase } from '@/lib/utils';
+import { site } from '@/site';
+
+const principles = [
+  {
+    title: 'У состояния есть причина, ответственный и следующее действие',
+    text: 'Статус без объяснения оставляет человека ждать. В ЭПЛ водитель видит, что делать дальше, а сотрудник — на каком этапе обработка и почему она встала.',
+    proof: { slug: 'taxi-epl', label: 'ЭПЛ и договоры' },
+  },
+  {
+    title: 'Проверяю модель, а не расположение кнопок',
+    text: 'Тесты меняли постановку задачи: метки риска уступили отдельному реестру обращений, четыре поля встречи — чек-листу.',
+    proof: { slug: 'research-appeals', label: 'Исследование обращений' },
+  },
+  {
+    title: 'Сценарий проверяю на работающем прототипе',
+    text: 'Прототипы собираю в коде на компонентах дизайн-системы: на тесте участник вводит свои данные, фильтры и поля работают.',
+    proof: { slug: 'erp-meetings', label: 'Прототип встреч' },
+  },
+];
+
+const path = [
+  { year: '2019', place: 'DDoS-Guard', text: 'Первая роль дизайнера — четыре года в продукте.' },
+  { year: '2023', place: 'Нескучные финансы', text: 'Пришёл ведущим UI-дизайнером. С августа строю токенную архитектуру — из неё выросла Noboring DS.', proof: { slug: 'noboring-ds', label: 'Кейс дизайн-системы' } },
+  { year: '2024', place: 'Нескучные финансы', text: 'Свои исследования и разделы: встречи и задачи прошли 3 итерации тестов и работают в продакшене.', proof: { slug: 'erp-meetings', label: 'Кейс встреч и задач' } },
+  { year: '2025', place: 'База Такси', text: 'С октября — приложение водителя и админка: электронный путевой лист вместо ручной выписки, договор по SMS.', proof: { slug: 'taxi-epl', label: 'Кейс ЭПЛ' } },
+  { year: '2026', place: 'НФ и База Такси', text: 'Кабинеты оператора и таксопарка, кабинет клиента ERP. Прототипы собираю в Claude Code и Codex.' },
+];
+---
+
+<section class="more-principles" aria-labelledby="principles-title">
+  <div class="more-head">
+    <h2 id="principles-title">Как я работаю</h2>
+    <p>Три правила, которые видно в кейсах</p>
+  </div>
+  <ol class="principle-list">
+    {
+      principles.map((p, i) => (
+        <li>
+          <span class="principle-index">0{i + 1}</span>
+          <h3>{p.title}</h3>
+          <p>{p.text}</p>
+          <a href={withBase(`/cases/${p.proof.slug}`)}>
+            {p.proof.label}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<section class="more-path" aria-labelledby="path-title">
+  <div class="more-head">
+    <h2 id="path-title">Путь</h2>
+    <p>В дизайне с 2019 года</p>
+  </div>
+  <ol class="path-list">
+    {
+      path.map((t) => (
+        <li>
+          <span class="path-year">{t.year}</span>
+          <div>
+            <h3>{t.place}</h3>
+            <p>{t.text}</p>
+            {t.proof && (
+              <a href={withBase(`/cases/${t.proof.slug}`)}>
+                {t.proof.label}
+                <span aria-hidden="true"> ↗</span>
+              </a>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<section class="more-open" aria-labelledby="open-title">
+  <div>
+    <h2 id="open-title">Исходники открыты</h2>
+    <p>Сайт собран в Claude Code и Codex. В репозитории — правила проекта для агентов, навыки переноса кейса из Notion и Figma, автопубликация.</p>
+  </div>
+  <div class="more-links">
+    <a href={site.github} target="_blank" rel="noopener">Репозиторий ↗</a>
+    <a href={`${site.github}/tree/main/.agents/skills`} target="_blank" rel="noopener">Навыки агентов ↗</a>
+  </div>
+</section>
+
+<section class="more-contact" aria-labelledby="contact-title">
+  <h2 id="contact-title">Обсудим задачу?</h2>
+  <p>Ищу роль продуктового дизайнера в B2B: ERP, внутренние инструменты, дизайн-системы.</p>
+  <a class="command-primary" href={site.telegram} target="_blank" rel="noopener"><span>Написать в Telegram</span><span aria-hidden="true">↗</span></a>
+</section>
+
+<style>
+  section {
+    max-width: 1536px;
+    margin: 0 auto;
+    border-top: 1px solid var(--command-line);
+    padding-block: 64px;
+  }
+  .more-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  h2 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+  .more-head p {
+    color: var(--command-muted);
+    font-size: 13px;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  a {
+    color: var(--command-text);
+    text-decoration: underline;
+    text-decoration-color: var(--command-line);
+    text-underline-offset: 4px;
+    font-size: 14px;
+  }
+
+  .principle-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid var(--command-line);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .principle-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px;
+    background: var(--command-panel);
+  }
+  .principle-list li + li {
+    border-left: 1px solid var(--command-line);
+  }
+  .principle-index {
+    font: 12px var(--font-mono);
+    color: var(--command-bright);
+  }
+  .principle-list p {
+    color: var(--command-muted);
+    font-size: 15px;
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .path-list li {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 24px;
+    padding-block: 24px;
+    border-top: 1px solid var(--command-line);
+  }
+  .path-list li:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .path-year {
+    font-family: 'Bebas Neue Cyrillic', 'Arial Narrow', var(--font-sans);
+    font-size: 44px;
+    line-height: 0.9;
+    color: var(--command-cream);
+  }
+  .path-list li:last-child .path-year {
+    color: var(--command-bright);
+  }
+  .path-list p {
+    margin-top: 6px;
+    color: var(--command-muted);
+    font-size: 15px;
+    line-height: 1.65;
+    max-width: 64ch;
+  }
+  .path-list a {
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  .more-open {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+  }
+  .more-open h2 {
+    font-size: 24px;
+  }
+  .more-open p {
+    margin-top: 8px;
+    color: var(--command-muted);
+    font-size: 15px;
+    line-height: 1.65;
+    max-width: 62ch;
+  }
+  .more-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .more-links a {
+    border: 1px solid var(--command-line);
+    border-radius: 999px;
+    padding: 10px 18px;
+    text-decoration: none;
+  }
+  .more-links a:hover {
+    border-color: var(--command-cream);
+  }
+
+  .more-contact h2 {
+    font-family: 'Bebas Neue Cyrillic', 'Arial Narrow', var(--font-sans);
+    font-weight: 400;
+    font-size: clamp(56px, 7vw, 112px);
+    line-height: 0.95;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+  .more-contact p {
+    margin-top: 20px;
+    max-width: 52ch;
+    color: var(--command-muted);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .more-contact .command-primary {
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  @media (max-width: 1100px) {
+    .principle-list {
+      grid-template-columns: 1fr;
+    }
+    .principle-list li + li {
+      border-left: 0;
+      border-top: 1px solid var(--command-line);
+    }
+  }
+  @media (max-width: 640px) {
+    section {
+      padding-block: 48px;
+    }
+    .more-head {
+      display: block;
+      margin-bottom: 28px;
+    }
+    .more-head p {
+      margin-top: 10px;
+    }
+    h2 {
+      font-size: 32px;
+    }
+    .principle-list li {
+      padding: 22px;
+    }
+    .path-list li {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .path-year {
+      font-size: 36px;
+    }
+    .more-open {
+      display: block;
+    }
+    .more-links {
+      margin-top: 20px;
+    }
+  }
+</style>

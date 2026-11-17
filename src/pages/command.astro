@@ -1,0 +1,17 @@
+---
+// Концепт стал главной: старый адрес ведёт на неё
+import { withBase } from '@/lib/utils';
+const to = withBase('/');
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${to}`} />
+    <link rel="canonical" href={to} />
+    <meta name="robots" content="noindex" />
+    <title>Портфолио Евгения Горлинского</title>
+  </head>
+  <body><a href={to}>Перейти к портфолио</a></body>
+</html>

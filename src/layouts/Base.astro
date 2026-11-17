@@ -8,9 +8,10 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  skipTarget?: string;
 }
 
-const { title = site.title, description = site.description, image } = Astro.props;
+const { title = site.title, description = site.description, image, skipTarget = '#main' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefined;
 ---
@@ -23,7 +24,7 @@ const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefi
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={withBase('/favicon-avatar.svg')} type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -31,17 +32,12 @@ const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefi
     {ogImage && <meta property="og:image" content={ogImage} />}
     <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0e0e0d" media="(prefers-color-scheme: dark)" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <link href={withBase('/fonts/google-fonts.css')} rel="stylesheet" />
     <ClientRouter />
   </head>
   <body class="min-h-dvh">
     <a
-      href="#main"
+      href={skipTarget}
       class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2"
       >К содержимому</a
     >
@@ -49,6 +45,7 @@ const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefi
 
     <script>
       import { navigate } from 'astro:transitions/client';
+      import type { TransitionBeforeSwapEvent } from 'astro:transitions/client';
 
       const SCROLL_KEY = 'home-scroll';
       const FROM_HOME_KEY = 'panel-from-home';
@@ -61,7 +58,7 @@ const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefi
       // Перед уходом с главной запоминаем позицию — главная остаётся под панелью на том же месте
       document.addEventListener('astro:before-preparation', (event) => {
         const to = (event as unknown as { to: URL }).to;
-        const goingToCase = to.pathname.startsWith(`${base}/cases/`);
+        const goingToCase = to.pathname.startsWith(`${base}/cases/`) || to.pathname.startsWith(`${base}/command/cases/`);
         if (!isPanelPage() && goingToCase) {
           sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
           sessionStorage.setItem(FROM_HOME_KEY, '1');
@@ -69,6 +66,13 @@ const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefi
         if (isPanelPage() && !goingToCase) {
           sessionStorage.removeItem(FROM_HOME_KEY);
         }
+      });
+
+      // Между проектами меняется статья, а не открывается новая панель.
+      document.addEventListener('astro:before-swap', (event) => {
+        const incoming = (event as TransitionBeforeSwapEvent).newDocument;
+        const switching = Boolean(document.querySelector('.command-case-root') && incoming.querySelector('.command-case-root'));
+        incoming.documentElement.toggleAttribute('data-case-switch', switching);
       });
 
       // Восстанавливаем, только если в главную/панель пришли переходом из этой пары
@@ -87,7 +91,8 @@ const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefi
         const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         window.setTimeout(
           () => {
-            if (sessionStorage.getItem(FROM_HOME_KEY) && history.length > 1) history.back();
+            if (panel.dataset.caseHome) navigate(`${panel.dataset.caseHome}?project=${encodeURIComponent(panel.dataset.casePanel??'')}`);
+            else if (sessionStorage.getItem(FROM_HOME_KEY) && history.length > 1) history.back();
             else navigate(homeHref);
           },
           reduce ? 0 : 200,
@@ -111,16 +116,29 @@ const ogImage = image ? new URL(withBase(image), Astro.site).toString() : undefi
           );
         } else {
           // Возвращаем фокус на карточку, из которой открыли кейс
-          const last = sessionStorage.getItem(LAST_CASE_KEY);
+          const last = (document.querySelector('.command-page') ? new URLSearchParams(location.search).get('project') : null) ?? sessionStorage.getItem(LAST_CASE_KEY);
           if (last) {
-            document.querySelector<HTMLElement>(`[data-case-link="${last}"]`)?.focus({ preventScroll: true });
+            const command=document.querySelector<HTMLElement>('.command-page');
+            if(command){
+              const origin=sessionStorage.getItem('command-return-focus');
+              const card=Array.from(command.querySelectorAll<HTMLElement>('[data-project-id]')).find(el=>el.dataset.projectId===last);
+              const target=origin?.startsWith('skill:')?command.querySelector<HTMLElement>(`[data-skill-focus="${origin.slice(6)}"]`):card;
+              target?.focus({preventScroll:true});
+            }else document.querySelector<HTMLElement>(`[data-case-link="${last}"]`)?.focus({ preventScroll: true });
             sessionStorage.removeItem(LAST_CASE_KEY);
           }
         }
       }
 
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isPanelPage()) closePanel();
+        if (e.key === 'Escape' && isPanelPage() && !document.querySelector('dialog[open]')) closePanel();
+        if (e.key === 'Tab' && isPanelPage()) {
+          const panel=document.querySelector<HTMLElement>('[data-case-panel]');
+          const focusable=Array.from(panel?.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex="0"]')??[]).filter(el=>el.getClientRects().length>0);
+          const first=focusable[0],last=focusable.at(-1);
+          if(e.shiftKey&&(document.activeElement===first||document.activeElement?.hasAttribute('data-panel-title'))){e.preventDefault();last?.focus();}
+          else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+        }
       });
 
       document.addEventListener('astro:after-swap', restoreScroll);

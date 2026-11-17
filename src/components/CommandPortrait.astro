@@ -1,0 +1,159 @@
+---
+import { withBase } from '@/lib/utils';
+const src = withBase('/images/home/portrait-engineer-poster.webp');
+const fibers = Array.from({length:28},(_,i)=>i/28*Math.PI*2);
+const eyes = [
+  {id:'left', cx:550, cy:525, path:'M 500 535 C 516 518 534 510 550 510 C 571 510 591 522 604 535 C 579 552 529 553 500 535 Z'},
+  {id:'right', cx:769, cy:525, path:'M 716 535 C 733 518 751 510 769 510 C 790 510 811 522 824 535 C 798 552 744 553 716 535 Z'},
+];
+---
+<svg class="command-portrait" data-gaze-portrait viewBox="0 0 1312 1199" preserveAspectRatio="xMidYMax meet" role="img" aria-labelledby="command-portrait-title" xmlns="http://www.w3.org/2000/svg">
+ <title id="command-portrait-title">Евгений Горлинский в белой каске смотрит прямо на посетителя</title>
+ <defs>
+  <image id="command-portrait-source" href={src} width="1312" height="1199" />
+  <linearGradient id="command-lens-light" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--command-eye-glint)" stop-opacity=".19"/><stop offset="0.55" stop-color="var(--command-eye-glint)" stop-opacity=".065"/><stop offset="1" stop-color="var(--command-eye-glint)" stop-opacity="0"/></linearGradient>
+  <clipPath id="command-lens-left"><path d="M 442 508 Q 528 493 620 512 L 607 580 Q 592 607 455 598 Q 445 593 442 575 Z"/></clipPath>
+  <clipPath id="command-lens-right"><path d="M 697 512 Q 776 493 872 506 L 859 582 Q 845 605 713 599 Z"/></clipPath>
+  <radialGradient id="command-iris-paint" cx="35%" cy="28%" r="72%"><stop offset="0" stop-color="var(--command-iris-inner)"/><stop offset="0.6" stop-color="var(--command-iris-color)"/><stop offset="1" stop-color="var(--command-iris-rim)"/></radialGradient>
+  <radialGradient id="command-sclera" cx="48%" cy="70%" r="72%"><stop offset="0" stop-color="var(--command-eye-white)"/><stop offset=".65" stop-color="var(--command-eye-bottom)"/><stop offset="1" stop-color="var(--command-eye-shadow)"/></radialGradient>
+  <linearGradient id="command-lid-shadow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--command-eye-outline)" stop-opacity=".62"/><stop offset=".42" stop-color="var(--command-eye-outline)" stop-opacity=".12"/><stop offset=".75" stop-color="var(--command-eye-outline)" stop-opacity="0"/></linearGradient>
+  <linearGradient id="command-lid-skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--command-lid-light)"/><stop offset="1" stop-color="var(--command-lid-dark)"/></linearGradient>
+  {eyes.map(e => <>
+   <clipPath id={`command-eye-${e.id}`}><path d={e.path}/></clipPath>
+  </>)}
+ </defs>
+ <use href="#command-portrait-source" />
+ {eyes.map(e => <g data-eye={e.id} aria-hidden="true">
+  <path data-eye-opening d={e.path} fill="url(#command-sclera)" />
+  <g clip-path={`url(#command-eye-${e.id})`}>
+   <g data-eye-contents style={`transform-origin:${e.cx}px 532px`}>
+   <g data-iris transform="translate(0 0)">
+    <circle cx={e.cx} cy={e.cy} r="23" fill="url(#command-iris-paint)" />
+    {fibers.map(a => <line x1={e.cx+Math.cos(a)*13} y1={e.cy+Math.sin(a)*13} x2={e.cx+Math.cos(a)*21} y2={e.cy+Math.sin(a)*21} stroke="var(--command-iris-fiber)" stroke-width="1.3" opacity=".45"/>)}
+    <circle cx={e.cx} cy={e.cy} r="11.5" fill="var(--command-pupil)" />
+    <circle cx={e.cx+6} cy={e.cy-7} r="4" fill="var(--command-eye-glint)" />
+    <circle cx={e.cx-5} cy={e.cy+7} r="1.5" fill="var(--command-eye-glint)" opacity=".45" />
+   </g>
+   </g>
+   <path d={e.path} fill="url(#command-lid-shadow)" />
+   <rect data-blink-lid x={e.cx-65} y="499" width="130" height="58" fill="url(#command-lid-skin)" style="transform:translateY(-62px)" />
+   <path data-blink-crease d={`M ${e.cx-48} 531 Q ${e.cx} 551 ${e.cx+48} 531`} stroke="var(--command-eye-outline)" stroke-width="2.5" fill="none" opacity="0" />
+  </g>
+ </g>)}
+ <g aria-hidden="true" pointer-events="none">
+  <g clip-path="url(#command-lens-left)"><g data-lens-reflection><path d="M 445 495 H 475 L 520 612 H 503 Z" fill="url(#command-lens-light)"/><path d="M 481 495 H 487 L 535 612 H 529 Z" fill="var(--command-eye-glint)" opacity=".09"/></g></g>
+  <g clip-path="url(#command-lens-right)"><g data-lens-reflection><path d="M 819 495 H 841 L 888 612 H 870 Z" fill="url(#command-lens-light)"/><path d="M 804 495 H 810 L 857 612 H 851 Z" fill="var(--command-eye-glint)" opacity=".07"/></g></g>
+ </g>
+</svg>
+<script>
+function initGaze() {
+ const portrait = document.querySelector<SVGSVGElement>('[data-gaze-portrait]');
+ if (!portrait || portrait.dataset.ready) return;
+ portrait.dataset.ready = 'true';
+ const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+ const fine = matchMedia('(hover: hover) and (pointer: fine)');
+ const eyes = Array.from(portrait.querySelectorAll<SVGGElement>('[data-eye]')).map(eye => ({
+  opening: eye.querySelector<SVGPathElement>('[data-eye-opening]')!,
+  iris: eye.querySelector<SVGGElement>('[data-iris]')!,
+  lid:eye.querySelector<SVGRectElement>('[data-blink-lid]')!,
+  contents:eye.querySelector<SVGGElement>('[data-eye-contents]')!,
+  crease:eye.querySelector<SVGPathElement>('[data-blink-crease]')!,
+  x:0, y:0, tx:0, ty:0,
+ }));
+ const reflections=Array.from(portrait.querySelectorAll<SVGGElement>('[data-lens-reflection]'));
+ let frame = 0;
+ let lastTime = 0;
+ let visible = true;
+ let blinkTimer:ReturnType<typeof setTimeout>|undefined;
+ let blinkAnimations:Animation[]=[];
+ const blinkAllowed=()=>visible&&!document.hidden&&!reduce.matches;
+ function stopBlink() {
+  clearTimeout(blinkTimer);blinkTimer=undefined;
+  blinkAnimations.forEach(animation=>animation.cancel());blinkAnimations=[];
+ }
+ function scheduleBlink() {
+  clearTimeout(blinkTimer);
+  if(!blinkAllowed())return;
+  blinkTimer=setTimeout(()=>{blink();},3200+Math.random()*4300);
+ }
+ function blink() {
+  if(!blinkAllowed())return;
+  portrait.dataset.blinkCount=String(Number(portrait.dataset.blinkCount??0)+1);
+  blinkAnimations.forEach(animation=>animation.cancel());blinkAnimations=[];
+  eyes.forEach(eye=>{
+   const timing={duration:230,easing:'linear',fill:'none' as FillMode};
+   blinkAnimations.push(eye.lid.animate([
+    {transform:'translateY(-62px)',offset:0},
+    {transform:'translateY(-4px)',offset:.32},
+    {transform:'translateY(-4px)',offset:.45},
+    {transform:'translateY(-62px)',offset:1}
+   ],timing));
+   blinkAnimations.push(eye.contents.animate([
+    {transform:'scaleY(1)',offset:0},{transform:'scaleY(.015)',offset:.32},
+    {transform:'scaleY(.015)',offset:.45},{transform:'scaleY(1)',offset:1}
+   ],timing));
+   blinkAnimations.push(eye.crease.animate([
+    {opacity:0,offset:0},{opacity:1,offset:.32},{opacity:1,offset:.45},{opacity:0,offset:1}
+   ],timing));
+  });
+  scheduleBlink();
+ }
+ // A finite RAF burst per movement: no idle animation loop.
+ function draw(now:number) {
+  const dt = lastTime ? Math.min(64, now-lastTime) : 16;
+  lastTime = now;
+  const ease = 1-Math.exp(-dt/80);
+  let moving = false;
+  eyes.forEach(eye => {
+   eye.x += (eye.tx-eye.x)*ease; eye.y += (eye.ty-eye.y)*ease;
+   if (Math.abs(eye.tx-eye.x)+Math.abs(eye.ty-eye.y) > .015) moving=true;
+   else {eye.x=eye.tx; eye.y=eye.ty;}
+   eye.iris.setAttribute('transform',`translate(${eye.x.toFixed(3)} ${eye.y.toFixed(3)})`);
+  });
+  const rx=eyes.reduce((sum,eye)=>sum+eye.x,0)/eyes.length/14*3;
+  const ry=eyes.reduce((sum,eye)=>sum+eye.y,0)/eyes.length/5;
+  reflections.forEach(reflection=>reflection.setAttribute('transform',`translate(${rx.toFixed(3)} ${ry.toFixed(3)})`));
+  frame = moving ? requestAnimationFrame(draw) : 0;
+  if (!moving) lastTime=0;
+ }
+ function queue() { if (!frame) frame=requestAnimationFrame(draw); }
+ function reset(immediate=false) {
+  eyes.forEach(eye => {eye.tx=0; eye.ty=0; if(immediate){eye.x=0; eye.y=0;eye.iris.setAttribute('transform','translate(0 0)');}});
+  if(immediate){reflections.forEach(reflection=>reflection.setAttribute('transform','translate(0 0)'));cancelAnimationFrame(frame);frame=0;lastTime=0;} else queue();
+ }
+ function move(event:PointerEvent) {
+  if (event.pointerType==='touch' || reduce.matches || !fine.matches || !visible) return;
+  // Derive direction from each eye separately, including convergence near the nose.
+  eyes.forEach(eye => {
+   const rect=eye.opening.getBoundingClientRect();
+   const dx=event.clientX-(rect.left+rect.width/2);
+   const dy=event.clientY-(rect.top+rect.height/2);
+   const depth=Math.max(70,rect.width*5);
+   const distance=Math.hypot(dx,dy,depth);
+   eye.tx=dx/distance*14;
+   eye.ty=dy/distance*5;
+  });
+  queue();
+ }
+ function leave(event:PointerEvent) { if(!event.relatedTarget) reset(); }
+ const mediaChange=()=>{reset(true);stopBlink();scheduleBlink();};
+ const hidden=()=>{if(document.hidden){reset(true);stopBlink();}else scheduleBlink();};
+ const observer=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??false;if(!visible){reset(true);stopBlink();}else scheduleBlink();});
+ observer.observe(portrait);
+ window.addEventListener('pointermove',move,{passive:true});
+ window.addEventListener('pointerout',leave,{passive:true});
+ window.addEventListener('blur',mediaChange);
+ window.addEventListener('resize',mediaChange,{passive:true});
+ window.addEventListener('scroll',mediaChange,{passive:true});
+ document.addEventListener('visibilitychange',hidden);
+ reduce.addEventListener('change',mediaChange);fine.addEventListener('change',mediaChange);
+ document.addEventListener('astro:before-swap',()=>{
+  reset(true);stopBlink();observer.disconnect();
+  window.removeEventListener('pointermove',move);window.removeEventListener('pointerout',leave);
+  window.removeEventListener('blur',mediaChange);window.removeEventListener('resize',mediaChange);window.removeEventListener('scroll',mediaChange);
+  document.removeEventListener('visibilitychange',hidden);
+  reduce.removeEventListener('change',mediaChange);fine.removeEventListener('change',mediaChange);
+ },{once:true});
+}
+document.addEventListener('astro:page-load',initGaze);
+</script>

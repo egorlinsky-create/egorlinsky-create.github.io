@@ -1,0 +1,77 @@
+---
+import CommandSkills from '@/components/CommandSkills.astro';
+import CommandPortrait from '@/components/CommandPortrait.astro';
+import CommandMore from '@/components/CommandMore.astro';
+import CommandMenu from '@/components/CommandMenu.astro';
+import Inspect from '@/components/Inspect.astro';
+import HeroBlueprint from '@/prototypes/HeroBlueprint';
+import { getCollection } from 'astro:content';
+import { site } from '@/site';
+import { withBase } from '@/lib/utils';
+interface Props { selectedCase?: string; }
+const { selectedCase } = Astro.props;
+const cases = (await getCollection('cases', ({data}) => !data.draft)).sort((a,b)=>a.data.order-b.data.order);
+// Результат в карточке — проверяемый: что изменилось и чем подтверждено
+const outcomes: Record<string,{task:string;result:string}> = {
+ 'taxi-epl': {task:'Приложение водителя и админка таксопарка: путевые листы, аренда, статусы автомобилей',result:'Электронный путевой лист и договор по SMS работают в Трейд Такси'},
+ 'erp-meetings': {task:'Встречи, задачи и учёт работы финдиректоров в ERP',result:'3 итерации тестов, 170 наблюдений, 13 правок: форма встречи стала чек-листом'},
+ 'noboring-ds': {task:'Токены, компоненты и правила поведения для финансовой ERP',result:'Три уровня токенов, тема переключается в одном слое; разделы ERP собираются из библиотеки параллельно'},
+ 'research-appeals': {task:'Проверка сценария входящих обращений и меток риска',result:'6 заданий, 104 наблюдения: вместо меток риска — отдельный реестр и процесс обращений'},
+ 'selection': {task:'Подбор финдиректоров под параметры клиента',result:'Решение о договоре — за 2 дня вместо месяца'},
+};
+---
+<div class="command-page" data-selected-case={selectedCase}>
+  <header class="command-header">
+    <a class="command-logo" href={withBase('/')} aria-label="Евгений Горлинский — на главную">ЕГ<span>Евгений Горлинский<br/><small>Продуктовый дизайнер</small></span></a>
+    <nav aria-label="Навигация"><a href={withBase('/#projects')}>Работы</a><a href={withBase('/#skills')}>Навыки</a><Inspect /><CommandMenu cases={cases.map((c) => ({ id: c.id, title: c.data.cardTitle ?? c.data.title, meta: c.data.company }))} /><a href={site.telegram} target="_blank" rel="noopener">Связаться ↗</a></nav>
+  </header>
+  <main id="main">
+    <section class="command-hero" aria-labelledby="hero-title">
+      {!selectedCase && <HeroBlueprint palette="command" client:idle />}
+      <div class="command-copy">
+        <p class="command-eyebrow"><span></span>Продуктовый дизайнер · открыт к предложениям</p>
+        <h1 id="hero-title"><span>Проектирую</span><span>B2B-системы</span></h1>
+        <p class="command-intro">ERP, рабочие инструменты и дизайн-системы. Разбираю процесс, проектирую сценарии со всеми состояниями и проверяю их на прототипах в коде.</p>
+        <div class="command-actions"><a class="command-primary" href={withBase('/#projects')}><span>Смотреть работы</span><span aria-hidden="true">↓</span></a><a class="command-secondary" href={site.telegram} target="_blank" rel="noopener">Telegram {site.telegramHandle}</a></div>
+        
+      </div>
+      <div class="command-person" data-person>
+        <div class="command-disc" aria-hidden="true"><i></i><b></b></div>
+        {selectedCase ? <img class="command-portrait command-portrait-static" src={withBase('/images/home/portrait-engineer-poster.webp')} alt="" width="1312" height="1199"/> : <CommandPortrait />}
+      </div>
+
+    </section>
+    <section class="command-projects" id="projects" aria-labelledby="projects-title">
+      <div class="command-project-label"><h2 id="projects-title">Избранные кейсы <span class="command-project-count">{cases.length}</span></h2><span>Продукты · Исследования · Дизайн-система</span></div>
+      <nav class="command-project-buttons" aria-label="Открыть кейс">
+        {cases.map((c, i) => <a class="command-project-card" href={withBase(`/cases/${c.id}`)} data-project={i} data-project-id={c.id} aria-label={`Открыть кейс: ${c.data.cardTitle}`}>
+          <div class="command-project-cover"><img src={withBase(c.data.cover!)} alt={`Интерфейсы проекта ${c.data.cardTitle}`} width="960" height="600" loading="lazy"/><span class="command-number">0{i+1}</span><span class="command-image-action" aria-hidden="true">Открыть кейс ↗</span></div>
+          <div class="command-project-info"><p class="command-project-company">{c.data.company} · {c.data.type}</p><h3>{c.data.cardTitle}</h3><p class="command-project-task">{outcomes[c.id]?.task ?? c.data.summary}</p><p class="command-project-result"><span>Результат</span>{outcomes[c.id]?.result ?? c.data.status}</p></div>
+        </a>)}
+      </nav>
+    </section>
+    {!selectedCase && <CommandSkills />}
+    {!selectedCase && <CommandMore />}
+  </main>
+  <footer class="command-footer"><span>© {new Date().getFullYear()} {site.name} · Продуктовый дизайнер · {site.city}</span><a href={site.telegram} target="_blank" rel="noopener">Telegram {site.telegramHandle}</a><a href={site.linkedin} target="_blank" rel="noopener">LinkedIn ↗</a></footer>
+</div>
+<script>
+function initCommand() {
+ const root=document.querySelector<HTMLElement>('.command-page');
+ if(!root||root.dataset.ready)return;
+ root.dataset.ready='true';
+ const cards=Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-project]'));
+ cards.forEach(card=>card.addEventListener('click',()=>{
+  sessionStorage.setItem('command-selected',card.dataset.projectId??'');
+  sessionStorage.setItem('command-return-focus',`card:${card.dataset.projectId}`);
+ }));
+ root.querySelectorAll<HTMLElement>('[data-skill-focus]').forEach(link=>link.addEventListener('click',()=>sessionStorage.setItem('command-return-focus',`skill:${link.dataset.skillFocus}`)));
+ const requested=new URLSearchParams(location.search).get('project');
+ if(requested){
+  const origin=sessionStorage.getItem('command-return-focus');
+  const target=origin?.startsWith('skill:')?root.querySelector<HTMLAnchorElement>(`[data-skill-focus="${origin.slice(6)}"]`):cards.find(card=>card.dataset.projectId===requested);
+  target?.focus({preventScroll:true});
+ }
+}
+document.addEventListener('astro:page-load',initCommand);
+</script>

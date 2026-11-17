@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * Фон hero: чертёж советского модернизма. Сетка осей с подписями (1, 2, 3 / А, Б, В),
- * фасады панельных домов из модулей, пролетающие построечные линии.
- * У курсора линии собираются в конструкцию и подсвечиваются, по краям — слегка «разобраны».
+ * Фон hero: интерфейсные компоненты на сетке для command;
+ * архитектурный чертёж сохранён для классической главной.
+ * У курсора UI-блоки целиком выравниваются и подсвечиваются.
  * Декоративный слой: aria-hidden, без событий; при prefers-reduced-motion — статичный кадр.
  */
 
-type Seg = { x1: number; y1: number; x2: number; y2: number; dx: number; dy: number; depth: number; delay: number; w: number };
+type Seg = { x1: number; y1: number; x2: number; y2: number; dx: number; dy: number; depth: number; delay: number; w: number; anchorX?: number; anchorY?: number };
 type Flyer = { kind: 'h' | 'v' | 'd'; pos: number; born: number; life: number; dir: 1 | -1 };
 
 const AXES_X = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'];
@@ -56,7 +56,41 @@ function facade(out: Seg[], r: () => number, x: number, y: number, cols: number,
   }
 }
 
-export default function HeroBlueprint() {
+/** Контуры UI на сетке 24 px. Каждый блок собирается целиком, без деформации строк. */
+function interfaceSketch(out: Seg[], x: number, y: number, w: number, h: number, kind: 'table' | 'form' | 'toolbar', index: number) {
+  const dx = index % 2 === 0 ? 12 : -12;
+  const dy = index % 2 === 0 ? -8 : 8;
+  const line = (x1: number,y1: number,x2: number,y2: number,weight = .7) => out.push({x1,y1,x2,y2,dx,dy,depth:.45,delay:0,w:weight,anchorX:x+w/2,anchorY:y+h/2});
+  const box = (bx:number,by:number,bw:number,bh:number) => {line(bx,by,bx+bw,by);line(bx+bw,by,bx+bw,by+bh);line(bx+bw,by+bh,bx,by+bh);line(bx,by+bh,bx,by);};
+  box(x,y,w,h);
+  line(x,y+32,x+w,y+32);
+  // Заголовок и действия, без выдуманных чисел и читаемого контента.
+  line(x+16,y+16,x+88,y+16,1.4);
+  box(x+w-36,y+12,16,8);
+  if(kind==='table') {
+    box(x+16,y+48,96,24);box(x+128,y+48,48,24);
+    line(x,y+88,x+w,y+88);
+    for(let row=0;row<Math.floor((h-96)/32);row++) {
+      const ry=y+104+row*32;
+      box(x+16,ry-4,8,8);line(x+40,ry,x+w*.47,ry);
+      line(x+w*.6,ry,x+w*.76,ry);line(x+w*.85,ry,x+w-16,ry);
+      if(ry+16<y+h)line(x,ry+16,x+w,ry+16,.4);
+    }
+  } else if(kind==='form') {
+    for(let row=0;row<2;row++) {
+      const ry=y+56+row*72;
+      line(x+16,ry,x+80,ry);box(x+16,ry+12,w-32,32);
+      line(x+28,ry+28,x+112,ry+28,.5);
+    }
+    box(x+w-96,y+h-40,80,24);
+  } else {
+    box(x+16,y+48,56,24);box(x+88,y+48,56,24);box(x+w-72,y+48,56,24);
+  }
+  // Углы выделения напоминают рамку компонента в редакторе.
+  for(const [hx,hy] of [[x,y],[x+w,y],[x,y+h],[x+w,y+h]])box(hx-2,hy-2,4,4);
+}
+
+export default function HeroBlueprint({ palette = 'site' }: { palette?: 'site' | 'command' } = {}) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -86,21 +120,34 @@ export default function HeroBlueprint() {
         const n = parseInt(m[1], 16);
         return `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`;
       };
-      colors.line = hex(cs.getPropertyValue('--c-text'), colors.line);
-      colors.accent = hex(cs.getPropertyValue('--c-accent'), colors.accent);
+      colors.line = hex(cs.getPropertyValue(palette === 'command' ? '--command-text' : '--c-text'), colors.line);
+      colors.accent = hex(cs.getPropertyValue(palette === 'command' ? '--command-bright' : '--c-accent'), colors.accent);
+      if (palette === 'command') colors.red = hex(cs.getPropertyValue('--command-red'), colors.red);
     };
 
     const build = () => {
       const r = rand(7);
       segs = [];
+      if (palette === 'command') {
+        const snap = (n:number) => 12 + Math.round((n-12)/24)*24;
+        if(W >= 760) {
+          interfaceSketch(segs,12,snap(H-184),288,144,'table',0);
+          interfaceSketch(segs,snap(W*.39),132,216,240,'form',1);
+          interfaceSketch(segs,snap(W-324),60,288,216,'table',2);
+          interfaceSketch(segs,snap(W*.49),snap(H-136),240,96,'toolbar',3);
+        } else {
+          interfaceSketch(segs,snap(W-252),snap(H*.46),240,208,'table',0);
+          interfaceSketch(segs,12,snap(H*.68),216,240,'form',1);
+        }
+      } else {
       // Ряд домов по низу: разная этажность и ширина — как микрорайон на генплане
       // линия земли — в пределах первого экрана, чтобы дома были видны без скролла
       // на узком экране текст занимает весь первый экран — дома уходят в низ блока, под демо
       const base = W >= 1024 ? Math.min(H - 30, window.innerHeight - 24) : H - 30;
       // Дома не заходят под текст: на широком экране — справа от колонки текста и в левом поле
       const contentLeft = Math.max(16, (W - 1152) / 2 + 32);
-      const zones: [number, number][] = W >= 1024 ? [[W * 0.53, W + 40]] : [[-40, W + 40]];
-      if (W >= 1024 && contentLeft > 140) zones.push([-30, contentLeft - 40]);
+      const zones: [number, number][] = W >= 1024 ? (palette === 'command' ? [[-60, W * 0.34], [W * 0.56, W + 40]] : [[W * 0.53, W + 40]]) : [[-40, W + 40]];
+      if (palette === 'site' && W >= 1024 && contentLeft > 140) zones.push([-30, contentLeft - 40]);
       let i = 0;
       for (const [from, to] of zones) {
         let x = from;
@@ -114,6 +161,7 @@ export default function HeroBlueprint() {
           x += cols * pw + 28 + r() * 60;
           i++;
         }
+      }
       }
       // Длинные построечные линии сетки осей
       for (let ax = 0; ax * STEP < W + STEP; ax++) {
@@ -137,6 +185,7 @@ export default function HeroBlueprint() {
       readColors();
       build();
       if (reduce) draw(performance.now() + 10000);
+      else if (!raf) raf = requestAnimationFrame(loop);
     };
 
     const ease = (p: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, p)), 3);
@@ -156,11 +205,12 @@ export default function HeroBlueprint() {
       ctx.clearRect(0, 0, W, H);
 
       // Курсор: плавно догоняет цель; без мыши — медленный обход по кривой
-      if (!mouse.active) {
+      if (!mouse.active && palette !== 'command') {
         const k = t / 9000;
         mouse.tx = W * (0.62 + 0.25 * Math.sin(k * 2.1));
         mouse.ty = H * (0.55 + 0.25 * Math.sin(k * 3.3 + 1));
       }
+      if (!mouse.active && palette === 'command') { mouse.tx=W*.5; mouse.ty=H*.5; }
       if (mouse.x < -1000) {
         mouse.x = mouse.tx;
         mouse.y = mouse.ty;
@@ -191,24 +241,24 @@ export default function HeroBlueprint() {
       for (const s of segs) {
         const p = reduce ? 1 : ease((t - s.delay) / 1100);
         if (p <= 0) continue;
-        const cx = (s.x1 + s.x2) / 2;
-        const cy = (s.y1 + s.y2) / 2;
+        const cx = s.anchorX ?? (s.x1 + s.x2) / 2;
+        const cy = s.anchorY ?? (s.y1 + s.y2) / 2;
         const dist = Math.hypot(cx - mx, cy - my);
-        const near = Math.max(0, 1 - dist / R);
+        const near = palette === 'command' && !mouse.active ? 0 : Math.max(0, 1 - dist / R);
         const inf = near * near * (3 - 2 * near);
-        const loose = (1 - inf) * 0.35;
-        const ox = s.dx * loose - px * 10 * s.depth;
-        const oy = s.dy * loose - py * 6 * s.depth;
+        const loose = (1 - inf) * (palette === 'command' ? 1 : .35);
+        const ox = reduce ? 0 : s.dx * loose - (palette === 'command' ? 0 : px * 10 * s.depth);
+        const oy = reduce ? 0 : s.dy * loose - (palette === 'command' ? 0 : py * 6 * s.depth);
         // прилёт: линия выезжает вдоль себя и дорисовывается
         const len = Math.hypot(s.x2 - s.x1, s.y2 - s.y1) || 1;
         const ux = (s.x2 - s.x1) / len;
         const uy = (s.y2 - s.y1) / len;
-        const fly = (1 - p) * 160;
+        const fly = palette === 'command' ? 0 : (1 - p) * 160;
         const x1 = s.x1 + ox - ux * fly;
         const y1 = s.y1 + oy - uy * fly;
         const x2 = x1 + (s.x2 - s.x1) * p;
         const y2 = y1 + (s.y2 - s.y1) * p;
-        const a = (0.09 + 0.13 * s.depth) * (0.7 + 0.3 * p) + inf * 0.5;
+        const a = (0.09 + 0.13 * s.depth) * (0.7 + 0.3 * p) + inf * (palette === 'command' ? .18 : .5);
         ctx.strokeStyle = inf > 0.35 ? `rgb(${colors.accent} / ${a})` : `rgb(${colors.line} / ${a})`;
         ctx.lineWidth = s.w;
         ctx.beginPath();
@@ -217,6 +267,10 @@ export default function HeroBlueprint() {
         ctx.stroke();
       }
 
+      ctx.font = '500 10px "JetBrains Mono", ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if(palette !== 'command') {
       // Оси с подписями в кружках, как на архитектурном чертеже
       ctx.font = '500 10px "JetBrains Mono", ui-monospace, monospace';
       ctx.textAlign = 'center';
@@ -234,8 +288,9 @@ export default function HeroBlueprint() {
         drawAxisBubble(22, gy, AXES_Y[ay], hot);
       }
 
+      }
       // Пролетающие построечные линии — как рейсшина по листу
-      if (!reduce) {
+      if (!reduce && palette !== 'command') {
         if (flyers.length < 3 && Math.random() < 0.02) {
           const kind = (['h', 'v', 'd'] as const)[Math.floor(Math.random() * 3)];
           flyers.push({ kind, pos: Math.random(), born: t, life: 2600 + Math.random() * 1800, dir: Math.random() < 0.5 ? 1 : -1 });
@@ -296,7 +351,7 @@ export default function HeroBlueprint() {
         }
         ctx.stroke();
         ctx.fillStyle = `rgb(${colors.accent} / 0.75)`;
-        ctx.fillText(String(MM), (ax0 + ax1) / 2, dimY - 8);
+        ctx.fillText(palette === 'command' ? `${STEP} px` : String(MM), (ax0 + ax1) / 2, dimY - 8);
         // отметка курсора: красный квадрат — единственный цветовой акцент
         ctx.fillStyle = `rgb(${colors.red} / 0.85)`;
         ctx.fillRect(mx - 3, my - 3, 6, 6);
@@ -304,14 +359,17 @@ export default function HeroBlueprint() {
         ctx.fillStyle = `rgb(${colors.line} / 0.45)`;
         const ix = Math.max(0, Math.min(AXES_X.length - 1, Math.floor((mx - 60) / STEP)));
         const iy = Math.max(0, Math.min(AXES_Y.length - 1, Math.round((my - 160) / STEP)));
-        ctx.fillText(`${AXES_Y[iy]}–${AXES_X[ix]}  ·  ±0.000`, mx + 10, my - 10);
+        ctx.fillText(palette === 'command' ? '24 px · grid' : `${AXES_Y[iy]}–${AXES_X[ix]}  ·  ±0.000`, mx + 10, my - 10);
         ctx.textAlign = 'center';
       }
     };
 
     const loop = (now: number) => {
-      if (visible && !document.hidden) draw(now);
-      raf = requestAnimationFrame(loop);
+      raf = 0;
+      if (!visible || document.hidden) return;
+      draw(now);
+      const settled = Math.abs(mouse.tx-mouse.x)<.1 && Math.abs(mouse.ty-mouse.y)<.1;
+      if (palette !== 'command' || now-t0<1800 || !settled) raf = requestAnimationFrame(loop);
     };
 
     const onMove = (e: PointerEvent) => {
@@ -324,28 +382,32 @@ export default function HeroBlueprint() {
         mouse.tx = x;
         mouse.ty = y;
       }
+      if (!raf && !reduce) raf = requestAnimationFrame(loop);
     };
 
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
-    const io = new IntersectionObserver(([en]) => (visible = en.isIntersecting));
+    const io = new IntersectionObserver(([en]) => { visible=en.isIntersecting; if(visible&&!reduce&&!raf)raf=requestAnimationFrame(loop); });
     io.observe(canvas);
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onScheme = () => readColors();
+    const onScheme = () => { readColors(); if(reduce)draw(performance.now()+10000); else if(!raf)raf=requestAnimationFrame(loop); };
+    const onVisibility = () => { if(!document.hidden&&!reduce&&!raf)raf=requestAnimationFrame(loop); };
+    document.addEventListener('visibilitychange',onVisibility);
     mq.addEventListener('change', onScheme);
     resize();
     if (!reduce) {
       window.addEventListener('pointermove', onMove, { passive: true });
-      raf = requestAnimationFrame(loop);
+      if(!raf) raf = requestAnimationFrame(loop);
     }
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
       mq.removeEventListener('change', onScheme);
+      document.removeEventListener('visibilitychange',onVisibility);
       window.removeEventListener('pointermove', onMove);
     };
-  }, []);
+  }, [palette]);
 
   return <canvas ref={ref} aria-hidden="true" className="hero-blueprint" />;
 }
